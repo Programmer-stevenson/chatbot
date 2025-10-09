@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saia Robot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes messageSlideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes typingDot {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        .gradient-animated {
+            background: linear-gradient(270deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 800% 800%;
+            animation: gradientFlow 15s ease infinite;
+        }
+
+        .message-appear {
+            animation: messageSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .typing-dot {
+            animation: typingDot 1.4s ease-in-out infinite;
+        }
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        .chat-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+
+        .chat-scroll {
+            height: 500px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .btn-primary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .quick-btn {
+            transition: all 0.2s ease;
+        }
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .bot-message {
+            background: white;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        @keyframes emojiFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .emoji-float {
+            display: inline-block;
+            animation: emojiFloat 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 min-h-screen flex items-center justify-center p-4">
+    
+    <div class="w-full max-w-5xl">
+        
+        <div class="bg-white rounded-t-3xl shadow-2xl overflow-hidden">
+            
+            <div class="gradient-animated text-white p-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
+                <div class="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
+                
+                <div class="relative z-10 flex items-center justify-between">
+                    <div class="flex items-center gap-5">
+                        <div class="w-20 h-20 bg-white bg-opacity-20 rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-xl">
+                            <span class="text-5xl emoji-float">🤖</span>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl font-bold tracking-tight mb-1">Meet Saia, Your AI Assistant</h1>
+                            <p class="text-lg opacity-90">Developed by Plexura & Powered by Google Gemini</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <div class="flex items-center gap-3 bg-white bg-opacity-20 px-5 py-3 rounded-full backdrop-blur-sm">
+                            <div id="statusDot" class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse shadow-lg"></div>
+                            <span class="text-sm font-bold" id="statusText">Connecting...</span>
+                        </div>
+                        <div class="text-sm opacity-75" id="currentTime"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4">
+                <div class="flex justify-around text-center">
+                    <div>
+                        <div class="text-2xl font-bold" id="messageCounter">0</div>
+                        <div class="text-xs opacity-80">Messages</div>
+                    </div>
+                    <div class="w-px bg-white opacity-30"></div>
+                    <div>
+                        <div class="text-2xl font-bold">∞</div>
+                        <div class="text-xs opacity-80">Topics</div>
+                    </div>
+                    <div class="w-px bg-white opacity-30"></div>
+                    <div>
+                        <div class="text-2xl font-bold">24/7</div>
+                        <div class="text-xs opacity-80">Available</div>
+                    </div>
+                    <div class="w-px bg-white opacity-30"></div>
+                    <div>
+                        <div class="text-2xl font-bold" id="serverStatus">⚡</div>
+                        <div class="text-xs opacity-80">Connection</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="messagesContainer" class="chat-scroll p-8 bg-gradient-to-b from-gray-50 to-white min-h-[500px]">
+                <div class="message-appear flex gap-4 mb-6">
+                    <div class="w-14 h-14 rounded-2xl gradient-animated flex items-center justify-center text-white text-3xl shadow-lg flex-shrink-0">
+                        🤖
+                    </div>
+                    <div class="flex-1 max-w-3xl">
+                        <div class="bot-message rounded-3xl rounded-tl-md p-6 shadow-lg">
+                            <p class="text-gray-800 text-lg leading-relaxed mb-3">
+                                <strong>Hello! I'm your AI Assistant Developed by Plexura.</strong>
+                            </p>
+                            <p class="text-gray-700 leading-relaxed">
+                                Thank you for choosing Saia, an AI Assistant developed by Plexura & Powered by Google Gemini. Once connected, I can assist you.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="typingIndicator" class="hidden px-8 pb-4 bg-gradient-to-b from-white to-gray-50">
+                <div class="flex gap-4">
+                    <div class="w-14 h-14 rounded-2xl gradient-animated flex items-center justify-center text-white text-3xl shadow-lg">
+                        🤖
+                    </div>
+                    <div class="bot-message rounded-3xl rounded-tl-md px-6 py-4 shadow-lg">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-purple-500 rounded-full typing-dot"></div>
+                            <div class="w-3 h-3 bg-purple-500 rounded-full typing-dot"></div>
+                            <div class="w-3 h-3 bg-purple-500 rounded-full typing-dot"></div>
+                            <span class="ml-2 text-sm text-gray-600">AI is thinking...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-8 py-4 bg-white border-t border-gray-100">
+                <div class="flex gap-3 overflow-x-auto pb-2">
+                    <button onclick="sendQuick('I would like to book a dental appointment. Can you help me schedule one? I can provide my preferred date/time, reason for visit, and contact information.')" class="quick-btn px-5 py-3 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm">
+                        Book Appointment
+                    </button>
+                   <button onclick="sendQuick('I am experiencing dental symptoms and need help understanding what they might mean and if I need urgent care.')" class="quick-btn px-5 py-3 bg-gradient-to-r from-pink-100 to-red-100 text-pink-700 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm">
+                        Symptoms Checker
+                    </button>
+                    <button onclick="sendQuick('I would like to learn more about a dental treatment or procedure. Can you explain what to expect?')" class="quick-btn px-5 py-3 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm">
+                        Treatment Info
+                    </button>
+                    <button onclick="sendQuick('I would like to know which insurances are accepted.')" class="quick-btn px-5 py-3 bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-700 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm">
+                        Insurance & Billing
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8 bg-white border-t-2 border-gray-100">
+                <div class="flex gap-4 items-end">
+                    <div class="flex-1">
+                        <textarea 
+                            id="messageInput"
+                            rows="1"
+                            placeholder="Type your message here..."
+                            class="w-full px-6 py-4 bg-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-800 text-lg resize-none transition-all duration-200"
+                            style="min-height: 56px; max-height: 150px;"
+                        ></textarea>
+                    </div>
+                    <button 
+                        id="sendButton"
+                        class="btn-primary px-8 py-4 gradient-animated text-white rounded-2xl font-bold text-lg shadow-xl flex items-center gap-3 h-14"
+                    >
+                        <span>Send</span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
+                    <span>Press Enter to send, Shift+Enter for new line</span>
+                    <span id="charCount">0 / 2000</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-4 text-center text-sm text-gray-600 bg-white bg-opacity-50 backdrop-blur rounded-2xl p-4">
+            <p>Saia, Developed by Plexura & Powered by Google Gemini</p>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/chat';
+        
+        let messageCount = 0;
+        let isConnected = false;
+
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const messageCounter = document.getElementById('messageCounter');
+        const charCount = document.getElementById('charCount');
+        const statusText = document.getElementById('statusText');
+        const statusDot = document.getElementById('statusDot');
+        const serverStatus = document.getElementById('serverStatus');
+
+        // Test server connection
+        async function testConnection() {
+            try {
+                const response = await fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: 'test' })
+                });
+                
+                if (response.ok) {
+                    isConnected = true;
+                    statusText.textContent = 'Connected';
+                    statusDot.className = 'w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg';
+                    serverStatus.textContent = '✅';
+                    addMessage('Server connected successfully! You can start chatting now.', false);
+                } else {
+                    throw new Error('Server responded with error');
+                }
+            } catch (error) {
+                isConnected = false;
+                statusText.textContent = 'Offline';
+                statusDot.className = 'w-3 h-3 bg-red-400 rounded-full animate-pulse shadow-lg';
+                serverStatus.textContent = '❌';
+                addMessage('Cannot connect to server. Make sure the Node.js server is running on http://localhost:3000\n\nRun: npm start', false);
+            }
+        }
+
+        // Call Gemini API via backend
+        async function callGeminiAPI(userMessage) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.response;
+            } catch (error) {
+                console.error('Error:', error);
+                return `Error connecting to server: ${error.message}\n\nMake sure your Node.js server is running with: npm start`;
+            }
+        }
+
+        // Format text
+        function formatText(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // Add message
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-appear flex gap-4 mb-6 ${isUser ? 'flex-row-reverse' : ''}`;
+            
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const formattedText = formatText(text);
+            
+            messageDiv.innerHTML = `
+                <div class="w-14 h-14 rounded-2xl ${isUser ? 'bg-gradient-to-br from-blue-600 to-blue-700' : 'gradient-animated'} flex items-center justify-center text-white text-3xl shadow-lg flex-shrink-0">
+                    ${isUser ? '👤' : '🤖'}
+                </div>
+                <div class="flex-1 max-w-3xl">
+                    <div class="${isUser ? 'user-message text-white' : 'bot-message text-gray-800'} rounded-3xl ${isUser ? 'rounded-tr-md' : 'rounded-tl-md'} p-6 shadow-lg">
+                        <p class="leading-relaxed text-lg whitespace-pre-wrap">${formattedText}</p>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2 ${isUser ? 'justify-end mr-2' : 'ml-2'}">
+                        <span class="text-xs ${isUser ? 'text-blue-600' : 'text-gray-500'}">${time}</span>
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            if (!isUser) {
+                messageCount++;
+                messageCounter.textContent = messageCount;
+            }
+        }
+
+        function showTyping() {
+            typingIndicator.classList.remove('hidden');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            typingIndicator.classList.add('hidden');
+        }
+
+        // Send message
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            
+            if (!message || message.length > 2000) return;
+
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+
+            addMessage(message, true);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            charCount.textContent = '0 / 2000';
+
+            showTyping();
+            const response = await callGeminiAPI(message);
+            hideTyping();
+            addMessage(response, false);
+
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            messageInput.focus();
+        }
+
+        function sendQuick(message) {
+            messageInput.value = message;
+            sendMessage();
+        }
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+            const count = this.value.length;
+            charCount.textContent = `${count} / 2000`;
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Test connection on load
+        window.addEventListener('load', () => {
+            testConnection();
+            messageInput.focus();
+        });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "gemini-chatbot",
+  "version": "1.0.0",
+  "description": "Chatbot with Gemini API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.22.0",
+    "@google/generative-ai": "^0.21.0",
+    "@supabase/supabase-js": "^2.74.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "tailwindcss": "^4.1.14"
+  }
+}
