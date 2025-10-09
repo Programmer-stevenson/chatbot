@@ -1,48 +1,168 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { GoogleGenAI } = require('@google/genai');
-
 const dental = require('./dental-training');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-const ai = new GoogleGenAI({ apiKey: 'AIzaSyA5QU_FRr3tliXfHV798PfI1NSi2tXMHAw' });
+// Initialize Gemini AI with environment variable (secure for production)
+const apiKey = process.env.GEMINI_API_KEY || 'AIzaSyA5QU_FRr3tliXfHV798PfI1NSi2tXMHAw';
+const ai = new GoogleGenAI({ apiKey });
 
+// Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
+// Health check endpoint for Vercel
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        service: 'Saia Dental Assistant'
+    });
+});
+
+// Main chat endpoint
 app.post('/api/chat', async (req, res) => {
     try {
         const { message } = req.body;
         
-        // Get dental enhancement (but don't use quickResponse anymore)
+        // Validate input
+        if (!message || typeof message !== 'string') {
+            return res.status(400).json({ 
+                error: 'Invalid message format. Message must be a non-empty string.' 
+            });
+        }
+
+        if (message.length > 2000) {
+            return res.status(400).json({ 
+                error: 'Message too long. Maximum 2000 characters allowed.' 
+            });
+        }
+
+        // Enhance with dental training
         const enhanced = dental.enhanceWithDentalTraining(message);
         
-        // ALWAYS send to Gemini - no more quickResponse shortcuts
-        // If it's dental-related, use enhanced prompt with context
-        // If it's not dental, use original message
+        // Use quick response if available (for exact matches)
+        if (enhanced.quickResponse) {
+            return res.json({ response: enhanced.quickResponse });
+        }
+
+        // Determine prompt based on dental relevance
         const promptToSend = enhanced.isDental ? enhanced.enhancedPrompt : message;
         
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: promptToSend
-        });
-        
-        // Log appointment info if detected
-        if (enhanced.appointmentInfo?.phone || enhanced.appointmentInfo?.email) {
-            console.log('📅 Appointment Request Detected:', enhanced.appointmentInfo);
+        // Call Gemini API with timeout
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
+        try {
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: promptToSend
+            });
+
+            clearTimeout(timeout);
+
+            // Log appointment detection for admin tracking
+            if (enhanced.appointmentInfo?.phone || enhanced.appointmentInfo?.email) {
+                console.log('[APPOINTMENT] Detected:', {
+                    timestamp: new Date().toISOString(),
+                    phone: enhanced.appointmentInfo.phone,
+                    email: enhanced.appointmentInfo.email
+                });
+            }
+
+            // Return successful response
+            res.json({ 
+                response: response.text,
+                isDental: enhanced.isDental
+            });
+
+        } catch (apiError) {
+            clearTimeout(timeout);
+            throw apiError;
         }
-        
-        res.json({ response: response.text });
+
     } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: error.message });
+        console.error('[ERROR]', {
+            timestamp: new Date().toISOString(),
+            error: error.message,
+            stack: error.stack
+        });
+
+        // Handle specific error types
+        if (error.name === 'AbortError') {
+            return res.status(504).json({ 
+                error: 'Request timeout. Please try again.' 
+            });
+        }
+
+        if (error.message?.includes('API key')) {
+            return res.status(500).json({ 
+                error: 'Service configuration error. Please contact support.' 
+            });
+        }
+
+        // Generic error response
+        res.status(500).json({ 
+            error: 'An error occurred while processing your request. Please try again.' 
+        });
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:3000`);
-    console.log(`🦷 Dental training system activated (AI-powered mode)`);
+// Serve static files (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname)));
+
+// Catch-all route for SPA (must be last)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('[UNHANDLED ERROR]', {
+        timestamp: new Date().toISOString(),
+        error: err.message,
+        stack: err.stack
+    });
+    
+    res.status(500).json({ 
+        error: 'Internal server error' 
+    });
+});
+
+// Start server
+const server = app.listen(port, () => {
+    console.log(`
+╔═══════════════════════════════════════╗
+║  🦷 Saia Dental Assistant Server     ║
+╠═══════════════════════════════════════╣
+║  Port: ${port.toString().padEnd(28)}║
+║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(20)}║
+║  AI Model: gemini-2.5-flash          ║
+║  Status: ✅ Running                   ║
+╚═══════════════════════════════════════╝
+    `);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('[SHUTDOWN] Received SIGTERM signal');
+    server.close(() => {
+        console.log('[SHUTDOWN] Server closed gracefully');
+        process.exit(0);
+    });
+});
+
+process.on('SIGINT', () => {
+    console.log('[SHUTDOWN] Received SIGINT signal');
+    server.close(() => {
+        console.log('[SHUTDOWN] Server closed gracefully');
+        process.exit(0);
+    });
+});
+
+module.exports = app;

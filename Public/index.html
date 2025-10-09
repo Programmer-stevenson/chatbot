@@ -242,7 +242,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3000/api/chat';
+        const API_URL = '/api/chat';
         
         let messageCount = 0;
         let isConnected = false;
@@ -259,7 +259,7 @@
 
         async function testConnection() {
             try {
-                const response = await fetch('http://localhost:3000/api/chat', {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

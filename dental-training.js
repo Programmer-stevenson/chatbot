@@ -1,229 +1,333 @@
 // ============================================
-// BALANCED DENTAL TRAINING SYSTEM FOR SAIA
+// SAIA DENTAL TRAINING SYSTEM - PRODUCTION
 // ============================================
-// This keeps the AI flexible while adding dental knowledge
 
 const dentalKnowledgeBase = {
-  services: {
-    general: [
-      "Routine dental checkups and cleanings",
-      "Dental X-rays and diagnostics",
-      "Fillings and cavity treatment",
-      "Root canal therapy",
-      "Tooth extractions",
-      "Preventive care and education"
-    ],
-    cosmetic: [
-      "Teeth whitening and bleaching",
-      "Porcelain veneers",
-      "Dental bonding",
-      "Smile makeovers",
-      "Gum contouring"
-    ],
-    orthodontics: [
-      "Traditional metal braces",
-      "Ceramic braces",
-      "Invisalign clear aligners",
-      "Retainers",
-      "Bite correction"
-    ],
-    surgical: [
-      "Dental implants",
-      "Wisdom teeth removal",
-      "Jaw surgery",
-      "Bone grafting",
-      "Oral cancer screening"
-    ],
-    emergency: [
-      "Severe toothache",
-      "Knocked-out tooth",
-      "Broken or chipped tooth",
-      "Dental abscess",
-      "Lost filling or crown"
-    ]
-  },
+    services: {
+        general: [
+            'Routine dental checkups and cleanings',
+            'Dental X-rays and diagnostics',
+            'Fillings and cavity treatment',
+            'Root canal therapy',
+            'Tooth extractions',
+            'Preventive care and education'
+        ],
+        cosmetic: [
+            'Teeth whitening and bleaching',
+            'Porcelain veneers',
+            'Dental bonding',
+            'Smile makeovers',
+            'Gum contouring'
+        ],
+        orthodontics: [
+            'Traditional metal braces',
+            'Ceramic braces',
+            'Invisalign clear aligners',
+            'Retainers',
+            'Bite correction'
+        ],
+        surgical: [
+            'Dental implants',
+            'Wisdom teeth removal',
+            'Jaw surgery',
+            'Bone grafting',
+            'Oral cancer screening'
+        ],
+        emergency: [
+            'Severe toothache',
+            'Knocked-out tooth',
+            'Broken or chipped tooth',
+            'Dental abscess',
+            'Lost filling or crown'
+        ]
+    },
 
-  businessInfo: {
-    hours: "Monday-Friday 8am-6pm, Saturdays 9am-2pm",
-    phone: "(555) 123-4567", // CHANGE THIS
-    address: "123 Dental Street, Your City, ST 12345", // CHANGE THIS
-    email: "info@yourdental.com", // CHANGE THIS
-    emergencyLine: "(555) 911-DENT" // CHANGE THIS
-  }
+    businessInfo: {
+        name: 'Your Dental Practice',
+        hours: 'Monday-Friday 8am-6pm, Saturdays 9am-2pm',
+        phone: '(555) 123-4567',
+        address: '123 Dental Street, Your City, ST 12345',
+        email: 'info@yourdental.com',
+        emergencyLine: '(555) 911-DENT',
+        website: 'www.yourdental.com'
+    },
+
+    insurance: {
+        accepted: [
+            'Delta Dental',
+            'Aetna',
+            'Cigna',
+            'MetLife',
+            'United Healthcare',
+            'Blue Cross Blue Shield',
+            'Humana',
+            'Guardian'
+        ],
+        government: ['Medicaid', 'Medicare (limited)', 'CHIP'],
+        marketplace: ['ACA/Obamacare plans']
+    }
 };
 
 // ============================================
-// SMART CONTEXT BUILDER (Not Overriding)
+// KEYWORD DETECTION (Optimized with caching)
 // ============================================
-function buildDentalContext(userMessage) {
-  const message = userMessage.toLowerCase();
-  
-  // Only add dental context if the query is dental-related
-  const dentalKeywords = [
-    'teeth', 'tooth', 'dental', 'dentist', 'appointment', 'cleaning',
-    'cavity', 'pain', 'insurance', 'cost', 'price', 'hours', 'location',
-    'emergency', 'whitening', 'braces', 'implant', 'root canal',
-    'checkup', 'hygienist', 'orthodontist', 'gums', 'mouth'
-  ];
-  
-  const isDentalQuery = dentalKeywords.some(keyword => message.includes(keyword));
-  
-  if (!isDentalQuery) {
-    // NOT dental-related - let Gemini respond naturally
-    return {
-      isDental: false,
-      context: "You are Saia, a helpful AI assistant. Answer naturally and conversationally.",
-      enhancedPrompt: userMessage
-    };
-  }
-  
-  // IS dental-related - add context
-  let context = "You are Saia, an AI assistant for a dental practice. ";
-  
-  // Add specific context based on query type
-  if (message.includes("appointment") || message.includes("schedule") || message.includes("book")) {
-    context += `Help them schedule an appointment. Our hours: ${dentalKnowledgeBase.businessInfo.hours}. Phone: ${dentalKnowledgeBase.businessInfo.phone}. `;
-  }
-  
-  if (message.includes("pain") || message.includes("hurt") || message.includes("emergency")) {
-    context += `This may be urgent. Emergency line: ${dentalKnowledgeBase.businessInfo.emergencyLine}. Assess severity and advise appropriately. `;
-  }
-  
-  if (message.includes("insurance") || message.includes("coverage") || message.includes("obamacare") || message.includes("medicaid")) {
-    context += "We accept most major insurance including Delta Dental, Aetna, Cigna, MetLife, United Healthcare, Blue Cross Blue Shield. We verify benefits and provide cost estimates. For specific plans like Obamacare/ACA or Medicaid, advise them to call us to verify coverage. ";
-  }
-  
-  if (message.includes("cost") || message.includes("price") || message.includes("payment")) {
-    context += "Provide general cost ranges if asked. Mention we offer payment plans and financing options. ";
-  }
-  
-  if (message.includes("hours") || message.includes("open") || message.includes("closed")) {
-    context += `Our hours: ${dentalKnowledgeBase.businessInfo.hours}. `;
-  }
-  
-  if (message.includes("location") || message.includes("address") || message.includes("where")) {
-    context += `Location: ${dentalKnowledgeBase.businessInfo.address}. `;
-  }
-  
-  return {
-    isDental: true,
-    context: context,
-    enhancedPrompt: `${context}\n\nUser question: ${userMessage}\n\nProvide a helpful, conversational response.`
-  };
+const keywordSets = {
+    dental: new Set([
+        'teeth', 'tooth', 'dental', 'dentist', 'appointment', 'cleaning',
+        'cavity', 'pain', 'insurance', 'cost', 'price', 'hours', 'location',
+        'emergency', 'whitening', 'braces', 'implant', 'root canal',
+        'checkup', 'hygienist', 'orthodontist', 'gums', 'mouth', 'filling',
+        'extraction', 'crown', 'bridge', 'denture', 'veneer', 'ache',
+        'sensitivity', 'bleeding', 'swollen', 'abscess', 'x-ray', 'fluoride'
+    ]),
+    
+    appointment: new Set([
+        'appointment', 'schedule', 'book', 'reserve', 'available', 'slot',
+        'visit', 'come in', 'see you', 'meet', 'consultation'
+    ]),
+    
+    emergency: new Set([
+        'emergency', 'urgent', 'pain', 'hurt', 'broke', 'knocked', 'bleeding',
+        'swollen', 'abscess', 'infection', 'severe', 'can\'t eat', 'unbearable'
+    ]),
+    
+    insurance: new Set([
+        'insurance', 'coverage', 'plan', 'medicaid', 'medicare', 'obamacare',
+        'aca', 'dental plan', 'benefits', 'covered', 'accept'
+    ]),
+    
+    cost: new Set([
+        'cost', 'price', 'payment', 'pay', 'affordable', 'expensive',
+        'fee', 'charge', 'financing', 'installment', 'budget'
+    ])
+};
+
+/**
+ * Check if message contains any keywords from a set
+ * @param {string} message - User message
+ * @param {Set} keywords - Set of keywords to check
+ * @returns {boolean}
+ */
+function containsKeywords(message, keywords) {
+    const lowerMessage = message.toLowerCase();
+    for (const keyword of keywords) {
+        if (lowerMessage.includes(keyword)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // ============================================
-// LIGHTWEIGHT KEYWORD RESPONDER
+// SMART CONTEXT BUILDER
+// ============================================
+/**
+ * Build contextual prompt based on query type
+ * @param {string} userMessage - User's message
+ * @returns {Object} Context information
+ */
+function buildDentalContext(userMessage) {
+    const isDental = containsKeywords(userMessage, keywordSets.dental);
+    
+    if (!isDental) {
+        return {
+            isDental: false,
+            context: 'You are Saia, a helpful AI assistant. Answer naturally and conversationally.',
+            enhancedPrompt: userMessage
+        };
+    }
+    
+    // Build dental-specific context
+    let context = `You are Saia, an AI assistant for ${dentalKnowledgeBase.businessInfo.name}. `;
+    
+    // Appointment-related
+    if (containsKeywords(userMessage, keywordSets.appointment)) {
+        context += `Help schedule appointments. Hours: ${dentalKnowledgeBase.businessInfo.hours}. Phone: ${dentalKnowledgeBase.businessInfo.phone}. Be friendly and ask for their preferred date/time. `;
+    }
+    
+    // Emergency-related
+    if (containsKeywords(userMessage, keywordSets.emergency)) {
+        context += `This may be urgent. Emergency line: ${dentalKnowledgeBase.businessInfo.emergencyLine}. Assess severity: life-threatening (ER), urgent (same-day), or can wait. Be calm and reassuring. `;
+    }
+    
+    // Insurance-related
+    if (containsKeywords(userMessage, keywordSets.insurance)) {
+        const insuranceList = dentalKnowledgeBase.insurance.accepted.join(', ');
+        context += `We accept: ${insuranceList}. For government plans (Medicaid/Medicare) or ACA marketplace plans, advise calling ${dentalKnowledgeBase.businessInfo.phone} to verify specific coverage. `;
+    }
+    
+    // Cost-related
+    if (containsKeywords(userMessage, keywordSets.cost)) {
+        context += `Provide general cost ranges. Mention payment plans and financing options available. Emphasize that exact costs depend on individual needs and insurance. `;
+    }
+    
+    // Location/hours (exact matches)
+    const lowerMsg = userMessage.toLowerCase().trim();
+    if (lowerMsg.includes('hours') || lowerMsg.includes('open')) {
+        context += `Hours: ${dentalKnowledgeBase.businessInfo.hours}. `;
+    }
+    if (lowerMsg.includes('location') || lowerMsg.includes('address') || lowerMsg.includes('where')) {
+        context += `Address: ${dentalKnowledgeBase.businessInfo.address}. `;
+    }
+    
+    return {
+        isDental: true,
+        context,
+        enhancedPrompt: `${context}\n\nUser: ${userMessage}\n\nProvide a helpful, professional, and conversational response. Be warm and empathetic.`
+    };
+}
+
+// ============================================
+// QUICK RESPONSES (Exact matches only)
 // ============================================
 const quickResponses = {
-  // Only respond to EXACT matches for basic info
-  checkKeyword(message) {
-    const lower = message.toLowerCase().trim();
-    
-    // Exact matches only
-    if (lower === "hours" || lower === "what are your hours" || lower === "what are your hours?") {
-      return `We're open ${dentalKnowledgeBase.businessInfo.hours}. Would you like to schedule an appointment?`;
+    /**
+     * Check for exact keyword matches
+     * @param {string} message - User message
+     * @returns {string|null} Quick response or null
+     */
+    checkKeyword(message) {
+        const normalized = message.toLowerCase().trim().replace(/[?!.,]/g, '');
+        
+        // Hours
+        if (normalized === 'hours' || normalized === 'what are your hours' || normalized === 'when are you open') {
+            return `We're open ${dentalKnowledgeBase.businessInfo.hours}. Would you like to schedule an appointment?`;
+        }
+        
+        // Location
+        if (normalized === 'location' || normalized === 'address' || normalized === 'where are you located' || normalized === 'where are you') {
+            return `We're located at ${dentalKnowledgeBase.businessInfo.address}. Need directions or want to schedule a visit?`;
+        }
+        
+        // Phone
+        if (normalized === 'phone' || normalized === 'phone number' || normalized === 'how do i call you' || normalized === 'contact') {
+            return `You can reach us at ${dentalKnowledgeBase.businessInfo.phone}. How can we help you today?`;
+        }
+        
+        // Email
+        if (normalized === 'email' || normalized === 'email address') {
+            return `Our email is ${dentalKnowledgeBase.businessInfo.email}. What would you like to know?`;
+        }
+        
+        return null;
     }
-    
-    if (lower === "location" || lower === "address" || lower === "where are you located" || lower === "where are you located?") {
-      return `We're located at ${dentalKnowledgeBase.businessInfo.address}. Need directions?`;
-    }
-    
-    if (lower === "phone" || lower === "phone number" || lower === "how do i call you" || lower === "how do i call you?") {
-      return `You can reach us at ${dentalKnowledgeBase.businessInfo.phone}. How can we help you today?`;
-    }
-    
-    // No exact match - let AI handle it
-    return null;
-  }
 };
 
 // ============================================
-// APPOINTMENT INFO EXTRACTOR (Optional)
+// APPOINTMENT INFO EXTRACTOR
 // ============================================
 const appointmentSystem = {
-  extractInfo(conversation) {
-    const info = {
-      hasPhone: false,
-      hasEmail: false,
-      hasName: false,
-      phone: null,
-      email: null
-    };
+    /**
+     * Extract contact information from conversation
+     * @param {string} conversation - User message
+     * @returns {Object} Extracted information
+     */
+    extractInfo(conversation) {
+        const info = {
+            hasPhone: false,
+            hasEmail: false,
+            phone: null,
+            email: null,
+            preferredTime: null
+        };
 
-    // Extract phone
-    const phoneMatch = conversation.match(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/);
-    if (phoneMatch) {
-      info.hasPhone = true;
-      info.phone = phoneMatch[0];
+        // Extract phone (various formats)
+        const phonePatterns = [
+            /\b(\d{3}[-.]?\d{3}[-.]?\d{4})\b/,
+            /\b(\(\d{3}\)\s*\d{3}[-.]?\d{4})\b/,
+            /\b(\d{10})\b/
+        ];
+        
+        for (const pattern of phonePatterns) {
+            const match = conversation.match(pattern);
+            if (match) {
+                info.hasPhone = true;
+                info.phone = match[1];
+                break;
+            }
+        }
+
+        // Extract email
+        const emailMatch = conversation.match(/\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,})\b/);
+        if (emailMatch) {
+            info.hasEmail = true;
+            info.email = emailMatch[1];
+        }
+
+        // Extract time preferences
+        const timeKeywords = ['morning', 'afternoon', 'evening', 'am', 'pm', 'noon'];
+        const lowerConv = conversation.toLowerCase();
+        for (const keyword of timeKeywords) {
+            if (lowerConv.includes(keyword)) {
+                info.preferredTime = keyword;
+                break;
+            }
+        }
+
+        return info;
     }
-
-    // Extract email
-    const emailMatch = conversation.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
-    if (emailMatch) {
-      info.hasEmail = true;
-      info.email = emailMatch[0];
-    }
-
-    return info;
-  }
 };
 
 // ============================================
-// MAIN INTEGRATION FUNCTION (Balanced)
+// MAIN INTEGRATION FUNCTION
 // ============================================
+/**
+ * Enhance user message with dental training
+ * @param {string} userMessage - User's message
+ * @param {string} sessionId - Optional session ID for tracking
+ * @returns {Object} Enhanced prompt and metadata
+ */
 function enhanceWithDentalTraining(userMessage, sessionId = 'default') {
-  // 1. Check for exact keyword matches (very limited)
-  const quickResponse = quickResponses.checkKeyword(userMessage);
-  if (quickResponse) {
+    // Input validation
+    if (!userMessage || typeof userMessage !== 'string') {
+        return {
+            quickResponse: null,
+            enhancedPrompt: 'Hello! How can I assist you today?',
+            isDental: false,
+            context: '',
+            appointmentInfo: null
+        };
+    }
+
+    // Check for quick response (exact matches)
+    const quickResponse = quickResponses.checkKeyword(userMessage);
+    if (quickResponse) {
+        return {
+            quickResponse,
+            enhancedPrompt: null,
+            isDental: true,
+            context: '',
+            appointmentInfo: null
+        };
+    }
+
+    // Build contextual prompt
+    const { isDental, context, enhancedPrompt } = buildDentalContext(userMessage);
+
+    // Extract appointment information if relevant
+    const appointmentInfo = containsKeywords(userMessage, keywordSets.appointment)
+        ? appointmentSystem.extractInfo(userMessage)
+        : null;
+
     return {
-      quickResponse,
-      enhancedPrompt: null,
-      isDental: true
+        quickResponse: null,
+        enhancedPrompt,
+        isDental,
+        context,
+        appointmentInfo
     };
-  }
-
-  // 2. Build context (only if dental-related)
-  const { isDental, context, enhancedPrompt } = buildDentalContext(userMessage);
-
-  // 3. Extract appointment info if mentioned
-  const appointmentInfo = appointmentSystem.extractInfo(userMessage);
-
-  return {
-    quickResponse: null,
-    enhancedPrompt,
-    isDental,
-    context,
-    appointmentInfo
-  };
 }
 
 // ============================================
-// EXPORT
+// EXPORTS
 // ============================================
 module.exports = {
-  dentalKnowledgeBase,
-  buildDentalContext,
-  appointmentSystem,
-  quickResponses,
-  enhanceWithDentalTraining
+    dentalKnowledgeBase,
+    buildDentalContext,
+    appointmentSystem,
+    quickResponses,
+    enhanceWithDentalTraining,
+    // Export for testing
+    containsKeywords,
+    keywordSets
 };
-
-// ============================================
-// USAGE NOTES
-// ============================================
-/*
-This balanced version:
-✅ Adds dental knowledge ONLY when relevant
-✅ Lets AI handle general questions naturally
-✅ Doesn't force dental responses on non-dental queries
-✅ Only gives canned responses for exact basic info requests
-✅ Allows Gemini's intelligence to shine through
-
-IMPORTANT: Update businessInfo with YOUR actual:
-- Phone number
-- Address  
-- Hours
-- Email
-- Emergency line
-*/
