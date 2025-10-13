@@ -31,7 +31,7 @@
       ]
     },
     {
-      "source": "/(.*\\\\.(js|css|png|jpg|jpeg|gif|svg|ico))",
+      "source": "/public/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -39,8 +39,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
