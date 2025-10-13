@@ -22,7 +22,7 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint for Vercel
+// Health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).json({ 
         status: 'healthy', 
@@ -119,22 +119,18 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Export for Vercel (don't start server, just export the app)
-module.exports = app;
+// Serve static files from public folder (ALWAYS, not just locally)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Only start server if running locally (not on Vercel)
-if (require.main === module) {
-    // Serve static files from public folder (local development only)
-    app.use(express.static(path.join(__dirname, 'public')));
-    
-    // Catch-all route for SPA - must be AFTER API routes (local development only)
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'index.html'));
-    });
-    
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
-        console.log(`
+// Catch-all route for SPA - must be AFTER API routes (ALWAYS)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Start server (works for both local and Render)
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`
 ╔═══════════════════════════════════════╗
 ║  🦷 Saia Dental Assistant Server     ║
 ╠═══════════════════════════════════════╣
@@ -144,7 +140,9 @@ if (require.main === module) {
 ║  Status: ✅ Running                   ║
 ╚═══════════════════════════════════════╝
 
-🌐 Open your browser: http://localhost:${port}
-        `);
-    });
-}
+🌐 Server running on port ${port}
+    `);
+});
+
+// Export for serverless platforms (Vercel)
+module.exports = app;
