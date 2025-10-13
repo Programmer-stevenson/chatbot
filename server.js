@@ -114,36 +114,21 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Determine which public folder exists (Public vs public)
-const publicFolder = fs.existsSync(path.join(__dirname, 'Public')) 
-    ? 'Public' 
-    : fs.existsSync(path.join(__dirname, 'public'))
-    ? 'public'
-    : null;
+// Use public folder (lowercase for consistency)
+const publicFolder = 'public';
 
-if (!publicFolder) {
-    console.error('⚠️  CRITICAL: Neither "Public" nor "public" folder found!');
+// Verify public folder exists
+if (!fs.existsSync(path.join(__dirname, publicFolder))) {
+    console.error('⚠️  CRITICAL: "public" folder not found!');
     console.error('   Current directory:', __dirname);
     console.error('   Files in directory:', fs.readdirSync(__dirname));
 }
 
 // Serve static files (HTML, CSS, JS) - look in public folder
-if (publicFolder) {
-    app.use(express.static(path.join(__dirname, publicFolder)));
-}
+app.use(express.static(path.join(__dirname, publicFolder)));
 
 // Catch-all route for SPA (must be last)
 app.get('*', (req, res) => {
-    if (!publicFolder) {
-        return res.status(500).json({
-            error: 'Public folder not found',
-            workingDirectory: __dirname,
-            availableFolders: fs.readdirSync(__dirname).filter(f => 
-                fs.statSync(path.join(__dirname, f)).isDirectory()
-            )
-        });
-    }
-
     const indexPath = path.join(__dirname, publicFolder, 'index.html');
     
     // Check if file exists before sending
@@ -154,7 +139,9 @@ app.get('*', (req, res) => {
             error: 'index.html not found',
             searchedPath: indexPath,
             publicFolder: publicFolder,
-            filesInPublicFolder: fs.readdirSync(path.join(__dirname, publicFolder))
+            filesInPublicFolder: fs.existsSync(path.join(__dirname, publicFolder)) 
+                ? fs.readdirSync(path.join(__dirname, publicFolder))
+                : []
         });
     }
 });
@@ -187,14 +174,14 @@ const server = app.listen(port, () => {
     `);
     
     // Verify index.html exists on startup
-    if (publicFolder) {
-        const indexPath = path.join(__dirname, publicFolder, 'index.html');
-        if (!fs.existsSync(indexPath)) {
-            console.error('⚠️  WARNING: index.html not found at:', indexPath);
+    const indexPath = path.join(__dirname, publicFolder, 'index.html');
+    if (!fs.existsSync(indexPath)) {
+        console.error('⚠️  WARNING: index.html not found at:', indexPath);
+        if (fs.existsSync(path.join(__dirname, publicFolder))) {
             console.error('   Files in', publicFolder, 'folder:', fs.readdirSync(path.join(__dirname, publicFolder)));
-        } else {
-            console.log('✅ index.html found at:', indexPath);
         }
+    } else {
+        console.log('✅ index.html found at:', indexPath);
     }
 });
 
