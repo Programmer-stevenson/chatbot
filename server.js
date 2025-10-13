@@ -1,15 +1,20 @@
+// Load environment variables (for local development)
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
 const { GoogleGenAI } = require('@google/genai');
 const dental = require('./dental-training');
 
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Initialize Gemini AI with environment variable (secure for production)
-const apiKey = process.env.GEMINI_API_KEY || 'AIzaSyA5QU_FRr3tliXfHV798PfI1NSi2tXMHAw';
+// Initialize Gemini AI with environment variable
+const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) {
+    console.error('❌ GEMINI_API_KEY not found in environment variables!');
+    console.error('   Make sure .env file exists with: GEMINI_API_KEY=your_key');
+}
 const ai = new GoogleGenAI({ apiKey });
 
 // Middleware
@@ -114,92 +119,32 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Use public folder (lowercase for consistency)
-const publicFolder = 'public';
+// Export for Vercel (don't start server, just export the app)
+module.exports = app;
 
-// Verify public folder exists
-if (!fs.existsSync(path.join(__dirname, publicFolder))) {
-    console.error('⚠️  CRITICAL: "public" folder not found!');
-    console.error('   Current directory:', __dirname);
-    console.error('   Files in directory:', fs.readdirSync(__dirname));
-}
-
-// Serve static files (HTML, CSS, JS) - look in public folder
-app.use(express.static(path.join(__dirname, publicFolder)));
-
-// Catch-all route for SPA (must be last)
-app.get('*', (req, res) => {
-    const indexPath = path.join(__dirname, publicFolder, 'index.html');
+// Only start server if running locally (not on Vercel)
+if (require.main === module) {
+    // Serve static files from public folder (local development only)
+    app.use(express.static(path.join(__dirname, 'public')));
     
-    // Check if file exists before sending
-    if (fs.existsSync(indexPath)) {
-        res.sendFile(indexPath);
-    } else {
-        res.status(404).json({ 
-            error: 'index.html not found',
-            searchedPath: indexPath,
-            publicFolder: publicFolder,
-            filesInPublicFolder: fs.existsSync(path.join(__dirname, publicFolder)) 
-                ? fs.readdirSync(path.join(__dirname, publicFolder))
-                : []
-        });
-    }
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('[UNHANDLED ERROR]', {
-        timestamp: new Date().toISOString(),
-        error: err.message,
-        stack: err.stack
+    // Catch-all route for SPA - must be AFTER API routes (local development only)
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
     
-    res.status(500).json({ 
-        error: 'Internal server error' 
-    });
-});
-
-// Start server
-const server = app.listen(port, () => {
-    console.log(`
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+        console.log(`
 ╔═══════════════════════════════════════╗
 ║  🦷 Saia Dental Assistant Server     ║
 ╠═══════════════════════════════════════╣
 ║  Port: ${port.toString().padEnd(28)}║
 ║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(20)}║
 ║  AI Model: gemini-2.5-flash          ║
-║  Working Dir: ${__dirname.padEnd(20).substring(0,20)}║
 ║  Status: ✅ Running                   ║
 ╚═══════════════════════════════════════╝
-    `);
-    
-    // Verify index.html exists on startup
-    const indexPath = path.join(__dirname, publicFolder, 'index.html');
-    if (!fs.existsSync(indexPath)) {
-        console.error('⚠️  WARNING: index.html not found at:', indexPath);
-        if (fs.existsSync(path.join(__dirname, publicFolder))) {
-            console.error('   Files in', publicFolder, 'folder:', fs.readdirSync(path.join(__dirname, publicFolder)));
-        }
-    } else {
-        console.log('✅ index.html found at:', indexPath);
-    }
-});
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-    console.log('[SHUTDOWN] Received SIGTERM signal');
-    server.close(() => {
-        console.log('[SHUTDOWN] Server closed gracefully');
-        process.exit(0);
+🌐 Open your browser: http://localhost:${port}
+        `);
     });
-});
-
-process.on('SIGINT', () => {
-    console.log('[SHUTDOWN] Received SIGINT signal');
-    server.close(() => {
-        console.log('[SHUTDOWN] Server closed gracefully');
-        process.exit(0);
-    });
-});
-
-module.exports = app;
+}
