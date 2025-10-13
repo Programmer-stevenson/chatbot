@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "Public/**",
+      "src": "public/**",
       "use": "@vercel/static"
     }
   ],
@@ -23,15 +23,15 @@
     },
     {
       "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))",
-      "dest": "/Public/$1"
+      "dest": "/public/$1"
     },
     {
       "src": "/",
-      "dest": "/Public/index.html"
+      "dest": "/public/index.html"
     },
     {
       "src": "/(.*)",
-      "dest": "/Public/index.html"
+      "dest": "/public/index.html"
     }
   ],
   "env": {
