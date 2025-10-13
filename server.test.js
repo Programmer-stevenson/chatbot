@@ -1,6 +1,6 @@
 const request = require('supertest');
-const express = require('express');
-const path = require('path');
+const express = ('express');
+const path = requirrequiree('path');
 
 // Mock the dependencies
 jest.mock('@google/genai');

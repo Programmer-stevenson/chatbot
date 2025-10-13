@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { GoogleGenAI } = require('@google/genai');
 const dental = require('./dental-training');
 
@@ -113,12 +114,49 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Serve static files (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname)));
+// Determine which public folder exists (Public vs public)
+const publicFolder = fs.existsSync(path.join(__dirname, 'Public')) 
+    ? 'Public' 
+    : fs.existsSync(path.join(__dirname, 'public'))
+    ? 'public'
+    : null;
+
+if (!publicFolder) {
+    console.error('⚠️  CRITICAL: Neither "Public" nor "public" folder found!');
+    console.error('   Current directory:', __dirname);
+    console.error('   Files in directory:', fs.readdirSync(__dirname));
+}
+
+// Serve static files (HTML, CSS, JS) - look in public folder
+if (publicFolder) {
+    app.use(express.static(path.join(__dirname, publicFolder)));
+}
 
 // Catch-all route for SPA (must be last)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    if (!publicFolder) {
+        return res.status(500).json({
+            error: 'Public folder not found',
+            workingDirectory: __dirname,
+            availableFolders: fs.readdirSync(__dirname).filter(f => 
+                fs.statSync(path.join(__dirname, f)).isDirectory()
+            )
+        });
+    }
+
+    const indexPath = path.join(__dirname, publicFolder, 'index.html');
+    
+    // Check if file exists before sending
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        res.status(404).json({ 
+            error: 'index.html not found',
+            searchedPath: indexPath,
+            publicFolder: publicFolder,
+            filesInPublicFolder: fs.readdirSync(path.join(__dirname, publicFolder))
+        });
+    }
 });
 
 // Error handling middleware
@@ -143,9 +181,21 @@ const server = app.listen(port, () => {
 ║  Port: ${port.toString().padEnd(28)}║
 ║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(20)}║
 ║  AI Model: gemini-2.5-flash          ║
+║  Working Dir: ${__dirname.padEnd(20).substring(0,20)}║
 ║  Status: ✅ Running                   ║
 ╚═══════════════════════════════════════╝
     `);
+    
+    // Verify index.html exists on startup
+    if (publicFolder) {
+        const indexPath = path.join(__dirname, publicFolder, 'index.html');
+        if (!fs.existsSync(indexPath)) {
+            console.error('⚠️  WARNING: index.html not found at:', indexPath);
+            console.error('   Files in', publicFolder, 'folder:', fs.readdirSync(path.join(__dirname, publicFolder)));
+        } else {
+            console.log('✅ index.html found at:', indexPath);
+        }
+    }
 });
 
 // Graceful shutdown
