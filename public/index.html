@@ -98,36 +98,30 @@
         }
 
         @keyframes toothFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(5deg); }
+            0%, 100% { 
+                transform: translateY(0); 
+            }
+            50% { 
+                transform: translateY(-15px); 
+            }
         }
         
         @keyframes toothSparkle {
             0%, 90%, 100% { 
                 filter: brightness(1);
-                transform: translateY(0) rotate(0deg);
             }
-            92% { 
-                filter: brightness(1.8) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
-                transform: translateY(-3px) rotate(-5deg) scale(1.1);
-            }
-            94% { 
-                filter: brightness(1);
-                transform: translateY(0) rotate(0deg);
-            }
-            96% { 
-                filter: brightness(1.8) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
-                transform: translateY(-3px) rotate(5deg) scale(1.1);
-            }
-            98% { 
-                filter: brightness(1);
-                transform: translateY(0) rotate(0deg);
+            95% { 
+                filter: brightness(3) drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 30px rgba(14, 165, 233, 0.9));
             }
         }
         
-        .tooth-float {
+        .tooth-container-float {
+            animation: toothFloat 3.5s ease-in-out infinite;
+        }
+        
+        .tooth-sparkle {
             display: inline-block;
-            animation: toothFloat 3s ease-in-out infinite, toothSparkle 10s ease-in-out infinite;
+            animation: toothSparkle 6s ease-in-out infinite;
         }
 
         @keyframes typewriterOnce {
@@ -138,11 +132,12 @@
 
         @keyframes typewriter {
             0% { max-width: 0; }
-            19.9% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
-            20% { max-width: 100%; border-right-color: transparent; }
-            80% { max-width: 100%; border-right-color: transparent; }
-            80.1% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
-            99.9% { max-width: 0; border-right-color: rgba(255, 255, 255, 0.75); }
+            30% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
+            30.1% { max-width: 100%; border-right-color: transparent; }
+            70% { max-width: 100%; border-right-color: transparent; }
+            70.1% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
+            85% { max-width: 0; border-right-color: rgba(255, 255, 255, 0.75); }
+            85.1% { max-width: 0; border-right-color: transparent; }
             100% { max-width: 0; border-right-color: transparent; }
         }
         
@@ -182,7 +177,7 @@
             white-space: nowrap;
             max-width: 0;
             animation: 
-                typewriter 15s steps(22) 2.5s infinite,
+                typewriter 15s steps(22) 3.5s infinite,
                 blink 0.75s step-end 2.5s infinite,
                 textFloat 4s ease-in-out 4.5s infinite;
         }
@@ -227,12 +222,12 @@
                 
                 <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
                     <div class="flex items-center gap-3 md:gap-4">
-                        <div class="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-20 rounded-2xl md:rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-xl flex-shrink-0">
-                            <span class="text-3xl md:text-4xl tooth-float">🦷</span>
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-20 rounded-2xl md:rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-xl flex-shrink-0 tooth-container-float">
+                            <span class="text-3xl md:text-4xl tooth-sparkle">🦷</span>
                         </div>
                         <div>
                             <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight mb-0.5">
-                                <span class="typewriter-title" id="typewriterTitle">Your Virtual Assistant</span>
+                                <span class="typewriter-title" id="typewriterTitle">Virtual Dental Assistant</span>
                             </h1>
                             <p class="text-sm md:text-base opacity-90">
                                 <span class="typewriter" id="typewriterText">Developed by <strong>Plexura</strong></span>
@@ -301,7 +296,7 @@
                             <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full typing-dot"></div>
                             <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full typing-dot"></div>
                             <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full typing-dot"></div>
-                            <span class="ml-2 text-xs md:text-sm text-gray-600">Saia is thinking...</span>
+                            <span class="ml-2 text-xs md:text-sm text-gray-600">Saia is typing...</span>
                         </div>
                     </div>
                 </div>
