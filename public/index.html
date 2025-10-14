@@ -101,9 +101,117 @@
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-5px) rotate(5deg); }
         }
+        
+        @keyframes toothSparkle {
+            0%, 90%, 100% { 
+                filter: brightness(1);
+                transform: translateY(0) rotate(0deg);
+            }
+            92% { 
+                filter: brightness(1.8) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+                transform: translateY(-3px) rotate(-5deg) scale(1.1);
+            }
+            94% { 
+                filter: brightness(1);
+                transform: translateY(0) rotate(0deg);
+            }
+            96% { 
+                filter: brightness(1.8) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+                transform: translateY(-3px) rotate(5deg) scale(1.1);
+            }
+            98% { 
+                filter: brightness(1);
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+        
         .tooth-float {
             display: inline-block;
-            animation: toothFloat 3s ease-in-out infinite;
+            animation: toothFloat 3s ease-in-out infinite, toothSparkle 10s ease-in-out infinite;
+        }
+
+        @keyframes typewriterOnce {
+            0% { max-width: 0; }
+            99.9% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
+            100% { max-width: 100%; border-right-color: transparent; }
+        }
+
+        @keyframes typewriter {
+            0% { max-width: 0; }
+            19.9% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
+            20% { max-width: 100%; border-right-color: transparent; }
+            80% { max-width: 100%; border-right-color: transparent; }
+            80.1% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
+            99.9% { max-width: 0; border-right-color: rgba(255, 255, 255, 0.75); }
+            100% { max-width: 0; border-right-color: transparent; }
+        }
+        
+        @keyframes blink {
+            50% { border-right-color: transparent; }
+        }
+        
+        @keyframes blinkOnce {
+            50% { border-right-color: transparent; }
+        }
+        
+        .typewriter-wrapper {
+            display: block;
+            overflow: hidden;
+        }
+        
+        .typewriter-title {
+            display: inline-block;
+            overflow: hidden;
+            border-right: 2px solid rgba(255, 255, 255, 0.75);
+            white-space: nowrap;
+            max-width: 0;
+            animation: 
+                typewriterOnce 2s steps(23) forwards,
+                blink 0.75s step-end 2.67;
+        }
+        
+        @keyframes textFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        .typewriter {
+            display: inline-block;
+            overflow: hidden;
+            border-right: 2px solid rgba(255, 255, 255, 0.75);
+            white-space: nowrap;
+            max-width: 0;
+            animation: 
+                typewriter 15s steps(22) 2.5s infinite,
+                blink 0.75s step-end 2.5s infinite,
+                textFloat 4s ease-in-out 4.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { 
+                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+                transform: scale(1);
+            }
+            10% { 
+                box-shadow: 0 0 15px rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.4);
+                transform: scale(1.1);
+            }
+            20% { 
+                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+                transform: scale(1);
+            }
+            30% { 
+                box-shadow: 0 0 15px rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.4);
+                transform: scale(1.1);
+            }
+            40% { 
+                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+                transform: scale(1);
+            }
+        }
+        
+        .status-connected {
+            animation: heartbeat 3s ease-in-out infinite;
         }
     </style>
 </head>
@@ -123,8 +231,12 @@
                             <span class="text-3xl md:text-4xl tooth-float">🦷</span>
                         </div>
                         <div>
-                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight mb-0.5">Your Virtual Assistant</h1>
-                            <p class="text-sm md:text-base opacity-90">Developed by Plexura</p>
+                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight mb-0.5">
+                                <span class="typewriter-title" id="typewriterTitle">Your Virtual Assistant</span>
+                            </h1>
+                            <p class="text-sm md:text-base opacity-90">
+                                <span class="typewriter" id="typewriterText">Developed by <strong>Plexura</strong></span>
+                            </p>
                         </div>
                     </div>
                     <div class="flex flex-row md:flex-col items-center md:items-end gap-2 self-end md:self-auto">
@@ -277,7 +389,7 @@
                 if (response.ok) {
                     isConnected = true;
                     statusText.textContent = 'Connected';
-                    statusDot.className = 'w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-lg';
+                    statusDot.className = 'w-2.5 h-2.5 bg-green-400 rounded-full status-connected';
                     serverStatus.textContent = '✅';
                     addMessage('Server connected successfully! You can start chatting now.', false);
                 } else {
@@ -285,7 +397,7 @@
                 }
             } catch (error) {
                 isConnected = false;
-                statusText.textContent = 'Offline';
+                statusText.innerHTML = '<span style="color: #ef4444;">O</span>ffline';
                 statusDot.className = 'w-2.5 h-2.5 bg-red-400 rounded-full animate-pulse shadow-lg';
                 serverStatus.textContent = '❌';
                 addMessage('Cannot connect to server. Make sure the Node.js server is running on http://localhost:3000\n\nRun: npm start', false);
@@ -326,7 +438,6 @@
             messageDiv.className = `message-appear flex gap-3 mb-4 ${isUser ? 'flex-row-reverse' : ''}`;
             
             const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const formattedText = formatText(text);
             
             messageDiv.innerHTML = `
                 <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl ${isUser ? 'bg-gradient-to-br from-cyan-600 to-blue-600' : 'gradient-animated'} flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg flex-shrink-0">
@@ -334,7 +445,7 @@
                 </div>
                 <div class="flex-1 max-w-2xl">
                     <div class="${isUser ? 'user-message text-white' : 'bot-message text-gray-800'} rounded-2xl md:rounded-3xl ${isUser ? 'rounded-tr-md' : 'rounded-tl-md'} p-4 md:p-5 shadow-lg">
-                        <p class="leading-relaxed text-sm md:text-base whitespace-pre-wrap">${formattedText}</p>
+                        <p class="leading-relaxed text-sm md:text-base whitespace-pre-wrap" data-text="${text.replace(/"/g, '&quot;')}"></p>
                     </div>
                     <div class="flex items-center gap-2 mt-1.5 ${isUser ? 'justify-end mr-2' : 'ml-2'}">
                         <span class="text-[10px] md:text-xs ${isUser ? 'text-cyan-600' : 'text-gray-500'}">${time}</span>
@@ -348,6 +459,50 @@
             if (!isUser) {
                 messageCount++;
                 messageCounter.textContent = messageCount;
+                
+                // Typewriter effect for bot messages
+                const textElement = messageDiv.querySelector('p');
+                const fullText = text;
+                let index = 0;
+                textElement.innerHTML = '';
+                
+                const typewriterInterval = setInterval(() => {
+                    if (index < fullText.length) {
+                        const char = fullText[index];
+                        if (char === '\n') {
+                            textElement.innerHTML += '<br>';
+                        } else if (char === '*' && fullText[index + 1] === '*') {
+                            // Handle bold text
+                            const endIndex = fullText.indexOf('**', index + 2);
+                            if (endIndex !== -1) {
+                                textElement.innerHTML += '<strong>' + fullText.substring(index + 2, endIndex) + '</strong>';
+                                index = endIndex + 1;
+                            } else {
+                                textElement.innerHTML += char;
+                            }
+                        } else if (char === '*') {
+                            // Handle italic text
+                            const endIndex = fullText.indexOf('*', index + 1);
+                            if (endIndex !== -1) {
+                                textElement.innerHTML += '<em>' + fullText.substring(index + 1, endIndex) + '</em>';
+                                index = endIndex;
+                            } else {
+                                textElement.innerHTML += char;
+                            }
+                        } else {
+                            textElement.textContent += char;
+                        }
+                        index++;
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    } else {
+                        clearInterval(typewriterInterval);
+                    }
+                }, 30); // Speed of typing (lower = faster)
+            } else {
+                // For user messages, display immediately
+                const textElement = messageDiv.querySelector('p');
+                const formattedText = formatText(text);
+                textElement.innerHTML = formattedText;
             }
         }
 
