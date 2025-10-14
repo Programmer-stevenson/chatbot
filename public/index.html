@@ -58,9 +58,15 @@
         }
 
         .chat-scroll {
-            height: 500px;
+            height: 400px;
             overflow-y: auto;
             scroll-behavior: smooth;
+        }
+
+        @media (min-width: 768px) {
+            .chat-scroll {
+                height: 450px;
+            }
         }
 
         .btn-primary {
@@ -103,69 +109,69 @@
 </head>
 <body class="bg-gradient-to-br from-cyan-50 via-blue-50 to-teal-50 min-h-screen flex items-center justify-center p-4">
     
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-3xl">
         
         <div class="bg-white rounded-t-3xl shadow-2xl overflow-hidden">
             
-            <div class="gradient-animated text-white p-8 relative overflow-hidden">
+            <div class="gradient-animated text-white p-4 md:p-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
                 
-                <div class="relative z-10 flex items-center justify-between">
-                    <div class="flex items-center gap-5">
-                        <div class="w-20 h-20 bg-white bg-opacity-20 rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-xl">
-                            <span class="text-5xl tooth-float">🦷</span>
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-20 rounded-2xl md:rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-xl flex-shrink-0">
+                            <span class="text-3xl md:text-4xl tooth-float">🦷</span>
                         </div>
                         <div>
-                            <h1 class="text-4xl font-bold tracking-tight mb-1"> Your Virtual Receptionist, Saia</h1>
-                            <p class="text-lg opacity-90">Developed by Plexura </p>
+                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight mb-0.5">Your Virtual Assistant</h1>
+                            <p class="text-sm md:text-base opacity-90">Developed by Plexura</p>
                         </div>
                     </div>
-                    <div class="flex flex-col items-end gap-2">
-                        <div class="flex items-center gap-3 bg-white bg-opacity-20 px-5 py-3 rounded-full backdrop-blur-sm">
-                            <div id="statusDot" class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse shadow-lg"></div>
-                            <span class="text-sm font-bold" id="statusText">Connecting...</span>
+                    <div class="flex flex-row md:flex-col items-center md:items-end gap-2 self-end md:self-auto">
+                        <div class="flex items-center gap-2 bg-white bg-opacity-20 px-3 md:px-4 py-2 rounded-full backdrop-blur-sm">
+                            <div id="statusDot" class="w-2.5 h-2.5 bg-yellow-400 rounded-full animate-pulse shadow-lg"></div>
+                            <span class="text-xs md:text-sm font-bold" id="statusText">Connecting...</span>
                         </div>
-                        <div class="text-sm opacity-75" id="currentTime"></div>
+                        <div class="text-xs md:text-sm opacity-75" id="currentTime"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-r from-cyan-600 to-teal-600 text-white px-8 py-4">
-                <div class="flex justify-around text-center">
+            <div class="bg-gradient-to-r from-cyan-600 to-teal-600 text-white px-4 md:px-6 py-3">
+                <div class="flex justify-around text-center text-xs md:text-sm">
                     <div>
-                        <div class="text-2xl font-bold" id="messageCounter">0</div>
-                        <div class="text-xs opacity-80">Messages</div>
+                        <div class="text-lg md:text-xl font-bold" id="messageCounter">0</div>
+                        <div class="text-[10px] md:text-xs opacity-80">Messages</div>
                     </div>
                     <div class="w-px bg-white opacity-30"></div>
                     <div>
-                        <div class="text-2xl font-bold">∞</div>
-                        <div class="text-xs opacity-80">Topics</div>
+                        <div class="text-lg md:text-xl font-bold">∞</div>
+                        <div class="text-[10px] md:text-xs opacity-80">Topics</div>
                     </div>
                     <div class="w-px bg-white opacity-30"></div>
                     <div>
-                        <div class="text-2xl font-bold">24/7</div>
-                        <div class="text-xs opacity-80">Available</div>
+                        <div class="text-lg md:text-xl font-bold">24/7</div>
+                        <div class="text-[10px] md:text-xs opacity-80">Available</div>
                     </div>
                     <div class="w-px bg-white opacity-30"></div>
                     <div>
-                        <div class="text-2xl font-bold" id="serverStatus">⚡</div>
-                        <div class="text-xs opacity-80">Connection</div>
+                        <div class="text-lg md:text-xl font-bold" id="serverStatus">⚡</div>
+                        <div class="text-[10px] md:text-xs opacity-80">Connection</div>
                     </div>
                 </div>
             </div>
 
-            <div id="messagesContainer" class="chat-scroll p-8 bg-gradient-to-b from-cyan-50 to-white min-h-[500px]">
-                <div class="message-appear flex gap-4 mb-6">
-                    <div class="w-14 h-14 rounded-2xl gradient-animated flex items-center justify-center text-white text-3xl shadow-lg flex-shrink-0">
+            <div id="messagesContainer" class="chat-scroll p-4 md:p-6 bg-gradient-to-b from-cyan-50 to-white min-h-[400px] md:min-h-[450px]">
+                <div class="message-appear flex gap-3 mb-4">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl gradient-animated flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg flex-shrink-0">
                         🦷
                     </div>
-                    <div class="flex-1 max-w-3xl">
-                        <div class="bot-message rounded-3xl rounded-tl-md p-6 shadow-lg">
-                            <p class="text-gray-800 text-lg leading-relaxed mb-3">
-                                <strong>Hello! I'm your Dental AI Receptionist Developed by Plexura.</strong>
+                    <div class="flex-1 max-w-2xl">
+                        <div class="bot-message rounded-2xl md:rounded-3xl rounded-tl-md p-4 md:p-5 shadow-lg">
+                            <p class="text-gray-800 text-base md:text-lg leading-relaxed mb-2">
+                                <strong>Hello! I'm your Dental AI Assistant Developed by Plexura.</strong>
                             </p>
-                            <p class="text-gray-700 leading-relaxed">
+                            <p class="text-gray-700 text-sm md:text-base leading-relaxed">
                                 Thank you for choosing Saia, an AI Assistant developed by Plexura & Powered by Google Gemini. Once connected, I can assist you with dental questions, appointments, and more.
                             </p>
                         </div>
@@ -173,62 +179,63 @@
                 </div>
             </div>
 
-            <div id="typingIndicator" class="hidden px-8 pb-4 bg-gradient-to-b from-white to-cyan-50">
-                <div class="flex gap-4">
-                    <div class="w-14 h-14 rounded-2xl gradient-animated flex items-center justify-center text-white text-3xl shadow-lg">
+            <div id="typingIndicator" class="hidden px-4 md:px-6 pb-3 bg-gradient-to-b from-white to-cyan-50">
+                <div class="flex gap-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl gradient-animated flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg">
                         🦷
                     </div>
-                    <div class="bot-message rounded-3xl rounded-tl-md px-6 py-4 shadow-lg">
+                    <div class="bot-message rounded-2xl md:rounded-3xl rounded-tl-md px-4 md:px-5 py-3 shadow-lg">
                         <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 bg-cyan-500 rounded-full typing-dot"></div>
-                            <div class="w-3 h-3 bg-cyan-500 rounded-full typing-dot"></div>
-                            <div class="w-3 h-3 bg-cyan-500 rounded-full typing-dot"></div>
-                            <span class="ml-2 text-sm text-gray-600">Saia is thinking...</span>
+                            <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full typing-dot"></div>
+                            <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full typing-dot"></div>
+                            <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full typing-dot"></div>
+                            <span class="ml-2 text-xs md:text-sm text-gray-600">Saia is thinking...</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="px-8 py-4 bg-white border-t border-gray-100">
-                <div class="flex gap-3 overflow-x-auto pb-2">
-                    <button onclick="sendQuick('I would like to book a dental appointment. Can you help me schedule one? I can provide my preferred date/time, reason for visit, and contact information.')" class="quick-btn px-5 py-3 bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm">
-                        Book Appointment
+            <div class="px-4 md:px-6 py-3 bg-white border-t border-gray-100">
+                <div class="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+                    <button onclick="sendQuick('I would like to book a dental appointment. Can you help me schedule one? I can provide my preferred date/time, reason for visit, and contact information.')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">
+                        📅 Book Appointment
                     </button>
-                   <button onclick="sendQuick('I am experiencing dental symptoms and need help understanding what they might mean and if I need urgent care.')" class="quick-btn px-5 py-3 bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm">
-                        Symptoms Checker
+                   <button onclick="sendQuick('I am experiencing dental symptoms and need help understanding what they might mean and if I need urgent care.')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">
+                        🩺 Symptoms Checker
                     </button>
-                    <button onclick="sendQuick('I would like to learn more about a dental treatment or procedure. Can you explain what to expect?')" class="quick-btn px-5 py-3 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm">
-                        Treatment Info
+                    <button onclick="sendQuick('I would like to learn more about a dental treatment or procedure. Can you explain what to expect?')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">
+                        ℹ️ Treatment Info
                     </button>
-                    <button onclick="sendQuick('I would like to know which insurances are accepted.')" class="quick-btn px-5 py-3 bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 rounded-2xl text-sm font-semibold whitespace-nowrap shadow-sm">
-                        Insurance & Billing
+                    <button onclick="sendQuick('I would like to know which insurances are accepted.')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">
+                        💳 Insurance
                     </button>
                 </div>
             </div>
 
-            <div class="p-8 bg-white border-t-2 border-gray-100">
-                <div class="flex gap-4 items-end">
+            <div class="p-4 md:p-6 bg-white border-t-2 border-gray-100">
+                <div class="flex gap-2 md:gap-3 items-end">
                     <div class="flex-1">
                         <textarea 
                             id="messageInput"
                             rows="1"
                             placeholder="Type your message here..."
-                            class="w-full px-6 py-4 bg-cyan-50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-800 text-lg resize-none transition-all duration-200"
-                            style="min-height: 56px; max-height: 150px;"
+                            class="w-full px-4 md:px-5 py-3 bg-cyan-50 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-800 text-sm md:text-base resize-none transition-all duration-200"
+                            style="min-height: 48px; max-height: 120px;"
                         ></textarea>
                     </div>
                     <button 
                         id="sendButton"
-                        class="btn-primary px-8 py-4 gradient-animated text-white rounded-2xl font-bold text-lg shadow-xl flex items-center gap-3 h-14"
+                        class="btn-primary px-4 md:px-6 py-3 gradient-animated text-white rounded-xl md:rounded-2xl font-bold text-sm md:text-base shadow-xl flex items-center gap-2 h-12"
                     >
-                        <span>Send</span>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="hidden sm:inline">Send</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
                     </button>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
-                    <span>Press Enter to send, Shift+Enter for new line</span>
+                <div class="mt-2 flex items-center justify-between text-[10px] md:text-xs text-gray-500">
+                    <span class="hidden sm:inline">Press Enter to send, Shift+Enter for new line</span>
+                    <span class="sm:hidden">Enter to send</span>
                     <span id="charCount">0 / 2000</span>
                 </div>
             </div>
@@ -270,7 +277,7 @@
                 if (response.ok) {
                     isConnected = true;
                     statusText.textContent = 'Connected';
-                    statusDot.className = 'w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg';
+                    statusDot.className = 'w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-lg';
                     serverStatus.textContent = '✅';
                     addMessage('Server connected successfully! You can start chatting now.', false);
                 } else {
@@ -279,7 +286,7 @@
             } catch (error) {
                 isConnected = false;
                 statusText.textContent = 'Offline';
-                statusDot.className = 'w-3 h-3 bg-red-400 rounded-full animate-pulse shadow-lg';
+                statusDot.className = 'w-2.5 h-2.5 bg-red-400 rounded-full animate-pulse shadow-lg';
                 serverStatus.textContent = '❌';
                 addMessage('Cannot connect to server. Make sure the Node.js server is running on http://localhost:3000\n\nRun: npm start', false);
             }
@@ -316,21 +323,21 @@
 
         function addMessage(text, isUser = false) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message-appear flex gap-4 mb-6 ${isUser ? 'flex-row-reverse' : ''}`;
+            messageDiv.className = `message-appear flex gap-3 mb-4 ${isUser ? 'flex-row-reverse' : ''}`;
             
             const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             const formattedText = formatText(text);
             
             messageDiv.innerHTML = `
-                <div class="w-14 h-14 rounded-2xl ${isUser ? 'bg-gradient-to-br from-cyan-600 to-blue-600' : 'gradient-animated'} flex items-center justify-center text-white text-3xl shadow-lg flex-shrink-0">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl ${isUser ? 'bg-gradient-to-br from-cyan-600 to-blue-600' : 'gradient-animated'} flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg flex-shrink-0">
                     ${isUser ? '👤' : '🦷'}
                 </div>
-                <div class="flex-1 max-w-3xl">
-                    <div class="${isUser ? 'user-message text-white' : 'bot-message text-gray-800'} rounded-3xl ${isUser ? 'rounded-tr-md' : 'rounded-tl-md'} p-6 shadow-lg">
-                        <p class="leading-relaxed text-lg whitespace-pre-wrap">${formattedText}</p>
+                <div class="flex-1 max-w-2xl">
+                    <div class="${isUser ? 'user-message text-white' : 'bot-message text-gray-800'} rounded-2xl md:rounded-3xl ${isUser ? 'rounded-tr-md' : 'rounded-tl-md'} p-4 md:p-5 shadow-lg">
+                        <p class="leading-relaxed text-sm md:text-base whitespace-pre-wrap">${formattedText}</p>
                     </div>
-                    <div class="flex items-center gap-2 mt-2 ${isUser ? 'justify-end mr-2' : 'ml-2'}">
-                        <span class="text-xs ${isUser ? 'text-cyan-600' : 'text-gray-500'}">${time}</span>
+                    <div class="flex items-center gap-2 mt-1.5 ${isUser ? 'justify-end mr-2' : 'ml-2'}">
+                        <span class="text-[10px] md:text-xs ${isUser ? 'text-cyan-600' : 'text-gray-500'}">${time}</span>
                     </div>
                 </div>
             `;
@@ -383,7 +390,7 @@
 
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
             const count = this.value.length;
             charCount.textContent = `${count} / 2000`;
         });
