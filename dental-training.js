@@ -83,12 +83,27 @@ const keywordSets = {
     
     appointment: new Set([
         'appointment', 'schedule', 'book', 'reserve', 'available', 'slot',
-        'visit', 'come in', 'see you', 'meet', 'consultation'
+        'visit', 'come in', 'see you', 'meet', 'consultation', 'booking'
+    ]),
+    
+    // Strong appointment intent keywords
+    appointmentIntent: new Set([
+        'book appointment', 'schedule appointment', 'make appointment',
+        'need appointment', 'want appointment', 'get appointment',
+        'book a visit', 'schedule visit', 'come in', 'see dentist',
+        'when can i come', 'availability', 'available times'
     ]),
     
     emergency: new Set([
         'emergency', 'urgent', 'pain', 'hurt', 'broke', 'knocked', 'bleeding',
         'swollen', 'abscess', 'infection', 'severe', 'can\'t eat', 'unbearable'
+    ]),
+    
+    // Symptoms that suggest needing an appointment
+    symptoms: new Set([
+        'toothache', 'tooth pain', 'cavity', 'broken tooth', 'chipped tooth',
+        'loose tooth', 'bleeding gums', 'swollen gums', 'bad breath',
+        'sensitivity', 'jaw pain', 'lost filling', 'lost crown'
     ]),
     
     insurance: new Set([
@@ -118,6 +133,58 @@ function containsKeywords(message, keywords) {
     return false;
 }
 
+/**
+ * Detect if user wants to book an appointment
+ * @param {string} message - User message
+ * @returns {Object} Intent detection result
+ */
+function detectAppointmentIntent(message) {
+    const lowerMessage = message.toLowerCase().trim();
+    
+    // Direct appointment request
+    if (containsKeywords(lowerMessage, keywordSets.appointmentIntent)) {
+        return {
+            shouldOfferBooking: true,
+            confidence: 'high',
+            reason: 'direct_request'
+        };
+    }
+    
+    // Symptoms mentioned - suggest appointment
+    if (containsKeywords(lowerMessage, keywordSets.symptoms)) {
+        return {
+            shouldOfferBooking: true,
+            confidence: 'medium',
+            reason: 'symptoms'
+        };
+    }
+    
+    // Emergency - suggest immediate appointment
+    if (containsKeywords(lowerMessage, keywordSets.emergency)) {
+        return {
+            shouldOfferBooking: true,
+            confidence: 'high',
+            reason: 'emergency',
+            isUrgent: true
+        };
+    }
+    
+    // General appointment mention
+    if (containsKeywords(lowerMessage, keywordSets.appointment)) {
+        return {
+            shouldOfferBooking: true,
+            confidence: 'medium',
+            reason: 'general_inquiry'
+        };
+    }
+    
+    return {
+        shouldOfferBooking: false,
+        confidence: 'low',
+        reason: 'no_intent'
+    };
+}
+
 // ============================================
 // SMART CONTEXT BUILDER
 // ============================================
@@ -128,26 +195,36 @@ function containsKeywords(message, keywords) {
  */
 function buildDentalContext(userMessage) {
     const isDental = containsKeywords(userMessage, keywordSets.dental);
+    const appointmentIntent = detectAppointmentIntent(userMessage);
     
     if (!isDental) {
         return {
             isDental: false,
             context: 'You are Saia, a helpful AI assistant. Answer naturally and conversationally.',
-            enhancedPrompt: userMessage
+            enhancedPrompt: userMessage,
+            appointmentIntent
         };
     }
     
     // Build dental-specific context
     let context = `You are Saia, an AI assistant for ${dentalKnowledgeBase.businessInfo.name}. `;
     
-    // Appointment-related
-    if (containsKeywords(userMessage, keywordSets.appointment)) {
-        context += `Help schedule appointments. Hours: ${dentalKnowledgeBase.businessInfo.hours}. Phone: ${dentalKnowledgeBase.businessInfo.phone}. Be friendly and ask for their preferred date/time. `;
+    // Appointment-related with booking suggestion
+    if (appointmentIntent.shouldOfferBooking) {
+        if (appointmentIntent.reason === 'direct_request') {
+            context += `The user wants to book an appointment. After answering, ALWAYS end your response with: "\n\n📅 **Ready to book?** [Click here to schedule your appointment](/appointments-form.html)" `;
+        } else if (appointmentIntent.reason === 'symptoms') {
+            context += `The user mentioned symptoms. After providing advice, ALWAYS suggest: "\n\n💡 I'd recommend scheduling an appointment so our dentist can examine this properly. [Book an appointment here](/appointments-form.html)" `;
+        } else if (appointmentIntent.reason === 'emergency' && appointmentIntent.isUrgent) {
+            context += `This is URGENT. After advice, say: "\n\n🚨 **This sounds urgent!** Please call our emergency line at ${dentalKnowledgeBase.businessInfo.emergencyLine} immediately, or [book an emergency appointment here](/appointments-form.html)" `;
+        } else {
+            context += `After answering, offer to book: "\n\n📅 Would you like to schedule an appointment? [Click here to book](/appointments-form.html)" `;
+        }
     }
     
     // Emergency-related
     if (containsKeywords(userMessage, keywordSets.emergency)) {
-        context += `This may be urgent. Emergency line: ${dentalKnowledgeBase.businessInfo.emergencyLine}. Assess severity: life-threatening (ER), urgent (same-day), or can wait. Be calm and reassuring. `;
+        context += `Emergency line: ${dentalKnowledgeBase.businessInfo.emergencyLine}. Assess severity: life-threatening (ER), urgent (same-day), or can wait. Be calm and reassuring. `;
     }
     
     // Insurance-related
@@ -173,7 +250,8 @@ function buildDentalContext(userMessage) {
     return {
         isDental: true,
         context,
-        enhancedPrompt: `${context}\n\nUser: ${userMessage}\n\nProvide a helpful, professional, and conversational response. Be warm and empathetic.`
+        enhancedPrompt: `${context}\n\nUser: ${userMessage}\n\nProvide a helpful, professional, and conversational response. Be warm and empathetic.`,
+        appointmentIntent
     };
 }
 
@@ -189,14 +267,19 @@ const quickResponses = {
     checkKeyword(message) {
         const normalized = message.toLowerCase().trim().replace(/[?!.,]/g, '');
         
+        // Direct booking requests
+        if (normalized.includes('book appointment') || normalized.includes('schedule appointment')) {
+            return `I'd be happy to help you book an appointment! 📅\n\n[Click here to schedule your appointment](/appointments-form.html)\n\nOr you can call us at ${dentalKnowledgeBase.businessInfo.phone} and we'll be glad to help!`;
+        }
+        
         // Hours
         if (normalized === 'hours' || normalized === 'what are your hours' || normalized === 'when are you open') {
-            return `We're open ${dentalKnowledgeBase.businessInfo.hours}. Would you like to schedule an appointment?`;
+            return `We're open ${dentalKnowledgeBase.businessInfo.hours}. Would you like to [schedule an appointment](/appointments-form.html)?`;
         }
         
         // Location
         if (normalized === 'location' || normalized === 'address' || normalized === 'where are you located' || normalized === 'where are you') {
-            return `We're located at ${dentalKnowledgeBase.businessInfo.address}. Need directions or want to schedule a visit?`;
+            return `We're located at ${dentalKnowledgeBase.businessInfo.address}. Need directions or want to [schedule a visit](/appointments-form.html)?`;
         }
         
         // Phone
@@ -228,8 +311,12 @@ const appointmentSystem = {
             hasEmail: false,
             phone: null,
             email: null,
-            preferredTime: null
+            preferredTime: null,
+            isUrgent: false
         };
+
+        // Check urgency
+        info.isUrgent = containsKeywords(conversation, keywordSets.emergency);
 
         // Extract phone (various formats)
         const phonePatterns = [
@@ -285,7 +372,8 @@ function enhanceWithDentalTraining(userMessage, sessionId = 'default') {
             enhancedPrompt: 'Hello! How can I assist you today?',
             isDental: false,
             context: '',
-            appointmentInfo: null
+            appointmentInfo: null,
+            appointmentIntent: { shouldOfferBooking: false }
         };
     }
 
@@ -297,15 +385,16 @@ function enhanceWithDentalTraining(userMessage, sessionId = 'default') {
             enhancedPrompt: null,
             isDental: true,
             context: '',
-            appointmentInfo: null
+            appointmentInfo: null,
+            appointmentIntent: { shouldOfferBooking: true, reason: 'quick_response' }
         };
     }
 
     // Build contextual prompt
-    const { isDental, context, enhancedPrompt } = buildDentalContext(userMessage);
+    const { isDental, context, enhancedPrompt, appointmentIntent } = buildDentalContext(userMessage);
 
     // Extract appointment information if relevant
-    const appointmentInfo = containsKeywords(userMessage, keywordSets.appointment)
+    const appointmentInfo = (containsKeywords(userMessage, keywordSets.appointment) || appointmentIntent.shouldOfferBooking)
         ? appointmentSystem.extractInfo(userMessage)
         : null;
 
@@ -314,7 +403,8 @@ function enhanceWithDentalTraining(userMessage, sessionId = 'default') {
         enhancedPrompt,
         isDental,
         context,
-        appointmentInfo
+        appointmentInfo,
+        appointmentIntent
     };
 }
 
@@ -327,6 +417,7 @@ module.exports = {
     appointmentSystem,
     quickResponses,
     enhanceWithDentalTraining,
+    detectAppointmentIntent,
     // Export for testing
     containsKeywords,
     keywordSets

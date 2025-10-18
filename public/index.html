@@ -13,19 +13,23 @@
         }
         
         @keyframes messageSlideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(20px) scale(0.95);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         
         @keyframes typingDot {
             0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
             30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(100px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .gradient-animated {
@@ -34,85 +38,43 @@
             animation: gradientFlow 15s ease infinite;
         }
 
-        .message-appear {
-            animation: messageSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .typing-dot {
-            animation: typingDot 1.4s ease-in-out infinite;
-        }
+        .message-appear { animation: messageSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal-overlay { animation: fadeIn 0.3s ease-out; }
+        .modal-content { animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .typing-dot { animation: typingDot 1.4s ease-in-out infinite; }
         .typing-dot:nth-child(1) { animation-delay: 0s; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
-        .chat-scroll::-webkit-scrollbar {
-            width: 8px;
-        }
-        .chat-scroll::-webkit-scrollbar-track {
-            background: #e0f2fe;
-            border-radius: 10px;
-        }
-        .chat-scroll::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #0ea5e9, #06b6d4);
-            border-radius: 10px;
-        }
+        .chat-scroll::-webkit-scrollbar { width: 8px; }
+        .chat-scroll::-webkit-scrollbar-track { background: #e0f2fe; border-radius: 10px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #0ea5e9, #06b6d4); border-radius: 10px; }
+        .chat-scroll { height: 400px; overflow-y: auto; scroll-behavior: smooth; }
+        @media (min-width: 768px) { .chat-scroll { height: 450px; } }
 
-        .chat-scroll {
-            height: 400px;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
+        .btn-primary { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 20px 40px rgba(14, 165, 233, 0.4); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        @media (min-width: 768px) {
-            .chat-scroll {
-                height: 450px;
-            }
-        }
+        .quick-btn { transition: all 0.2s ease; }
+        .quick-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
-        .btn-primary {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.4);
-        }
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+        .user-message { background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%); }
+        .bot-message { background: white; border: 1px solid rgba(14, 165, 233, 0.2); }
 
-        .quick-btn {
-            transition: all 0.2s ease;
-        }
-        .quick-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .user-message {
-            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
-        }
-        .bot-message {
-            background: white;
-            border: 1px solid rgba(14, 165, 233, 0.2);
-        }
+        .time-slot { transition: all 0.2s ease; }
+        .time-slot:hover:not(.disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
+        .time-slot.selected { background: linear-gradient(135deg, #0ea5e9, #06b6d4); color: white; border-color: #0ea5e9; }
+        .time-slot.disabled { opacity: 0.4; cursor: not-allowed; }
 
         @keyframes toothFloat {
-            0%, 100% { 
-                transform: translateY(0) translateZ(0); 
-            }
-            50% { 
-                transform: translateY(-15px) translateZ(0); 
-            }
+            0%, 100% { transform: translateY(0) translateZ(0); }
+            50% { transform: translateY(-15px) translateZ(0); }
         }
         
         @keyframes toothSparkle {
-            0%, 90%, 100% { 
-                filter: brightness(1);
-            }
-            95% { 
-                filter: brightness(3) drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 30px rgba(14, 165, 233, 0.9));
-            }
+            0%, 90%, 100% { filter: brightness(1); }
+            95% { filter: brightness(3) drop-shadow(0 0 20px rgba(255, 255, 255, 1)) drop-shadow(0 0 30px rgba(14, 165, 233, 0.9)); }
         }
         
         .tooth-container-float {
@@ -127,114 +89,185 @@
             animation: toothSparkle 6s ease-in-out infinite;
         }
 
-        @keyframes typewriterOnce {
-            0% { max-width: 0; }
-            99.9% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
-            100% { max-width: 100%; border-right-color: transparent; }
-        }
-
-        @keyframes typewriter {
-            0% { max-width: 0; }
-            30% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
-            30.1% { max-width: 100%; border-right-color: transparent; }
-            70% { max-width: 100%; border-right-color: transparent; }
-            70.1% { max-width: 100%; border-right-color: rgba(255, 255, 255, 0.75); }
-            85% { max-width: 0; border-right-color: rgba(255, 255, 255, 0.75); }
-            85.1% { max-width: 0; border-right-color: transparent; }
-            100% { max-width: 0; border-right-color: transparent; }
-        }
-        
-        @keyframes blink {
-            50% { border-right-color: transparent; }
-        }
-        
-        @keyframes blinkOnce {
-            50% { border-right-color: transparent; }
-        }
-        
-        .typewriter-wrapper {
-            display: block;
-            overflow: hidden;
-        }
-        
-        .typewriter-title {
-            display: inline-block;
-            overflow: hidden;
-            border-right: 2px solid rgba(255, 255, 255, 0.75);
-            white-space: nowrap;
-            max-width: 0;
-            animation: 
-                typewriterOnce 2s steps(23) forwards,
-                blink 0.75s step-end 2.67;
-        }
-        
-        @keyframes textFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        .typewriter {
-            display: inline-block;
-            overflow: hidden;
-            border-right: 2px solid rgba(255, 255, 255, 0.75);
-            white-space: nowrap;
-            max-width: 0;
-            animation: 
-                typewriter 15s steps(22) 3.5s infinite,
-                blink 0.75s step-end 2.5s infinite,
-                textFloat 4s ease-in-out 4.5s infinite;
-        }
-
         @keyframes heartbeat {
-            0%, 100% { 
-                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
-                transform: scale(1);
-            }
-            10% { 
-                box-shadow: 0 0 15px rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.4);
-                transform: scale(1.1);
-            }
-            20% { 
-                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
-                transform: scale(1);
-            }
-            30% { 
-                box-shadow: 0 0 15px rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.4);
-                transform: scale(1.1);
-            }
-            40% { 
-                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
-                transform: scale(1);
-            }
+            0%, 100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.5); transform: scale(1); }
+            10% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.4); transform: scale(1.1); }
+            20% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.5); transform: scale(1); }
+            30% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.4); transform: scale(1.1); }
+            40% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.5); transform: scale(1); }
         }
         
-        .status-connected {
-            animation: heartbeat 3s ease-in-out infinite;
-        }
+        .status-connected { animation: heartbeat 3s ease-in-out infinite; }
+
+        .modal-scroll::-webkit-scrollbar { width: 8px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #0ea5e9, #06b6d4); border-radius: 10px; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-cyan-50 via-blue-50 to-teal-50 min-h-screen flex items-center justify-center p-4">
     
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" style="background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
+        <div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div class="gradient-animated text-white p-6 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-4xl">🦷</span>
+                    <div>
+                        <h2 class="text-2xl font-bold">Book Your Appointment</h2>
+                        <p class="text-sm opacity-90">Schedule your dental visit</p>
+                    </div>
+                </div>
+                <button onclick="closeAppointmentModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-scroll overflow-y-auto p-6" style="max-height: calc(90vh - 100px);">
+                
+                <div id="modalSuccessMessage" class="hidden mb-6 p-6 bg-green-50 border-2 border-green-500 rounded-2xl">
+                    <div class="flex items-start gap-4">
+                        <div class="text-4xl">✅</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-green-800 mb-2">Appointment Request Submitted!</h3>
+                            <p class="text-green-700 mb-3">Thank you! We've received your appointment request.</p>
+                            <div id="modalConfirmationDetails" class="bg-white p-4 rounded-lg text-sm text-gray-700"></div>
+                            <p class="text-green-600 text-sm mt-3">📧 A confirmation email will be sent to your email address.<br>📱 You'll receive an SMS reminder before your appointment.</p>
+                            <button onclick="closeAppointmentModal()" class="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="modalAppointmentForm" class="space-y-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-cyan-500 text-white flex items-center justify-center font-bold text-sm">1</div>
+                            <span class="text-sm font-semibold text-gray-700">Personal Info</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-gray-200 mx-4"></div>
+                        <div class="flex items-center gap-2">
+                            <div id="modalStep2" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-sm">2</div>
+                            <span class="text-sm font-semibold text-gray-500">Date & Time</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-gray-200 mx-4"></div>
+                        <div class="flex items-center gap-2">
+                            <div id="modalStep3" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-sm">3</div>
+                            <span class="text-sm font-semibold text-gray-500">Confirm</span>
+                        </div>
+                    </div>
+
+                    <div id="modalSection1" class="space-y-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><span>👤</span> Personal Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="modalFullName" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all focus:outline-none" placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
+                                <input type="tel" id="modalPhone" required pattern="[0-9\s\-\+\(\)]+" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all focus:outline-none" placeholder="(555) 123-4567">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address <span class="text-red-500">*</span></label>
+                                <input type="email" id="modalEmail" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all focus:outline-none" placeholder="john@example.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth <span class="text-red-500">*</span></label>
+                                <input type="date" id="modalDob" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Are you a new patient?</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="modalPatientType" value="new" checked class="w-4 h-4 text-cyan-500">
+                                    <span class="text-gray-700">New Patient</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="modalPatientType" value="existing" class="w-4 h-4 text-cyan-500">
+                                    <span class="text-gray-700">Existing Patient</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="button" onclick="goToModalStep(2)" class="w-full py-4 gradient-animated text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all">Continue to Date & Time →</button>
+                    </div>
+
+                    <div id="modalSection2" class="hidden space-y-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><span>📅</span> Choose Date & Time</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Appointment Type <span class="text-red-500">*</span></label>
+                                <select id="modalAppointmentType" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all focus:outline-none">
+                                    <option value="">Select type...</option>
+                                    <option value="checkup">Regular Checkup (30 min)</option>
+                                    <option value="cleaning">Teeth Cleaning (45 min)</option>
+                                    <option value="consultation">Consultation (20 min)</option>
+                                    <option value="treatment">Dental Treatment (60 min)</option>
+                                    <option value="emergency">Emergency Visit (30 min)</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Preferred Date <span class="text-red-500">*</span></label>
+                                <input type="date" id="modalAppointmentDate" required onchange="loadModalAvailableSlots()" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">Select Time Slot <span class="text-red-500">*</span></label>
+                            <div id="modalTimeSlots" class="grid grid-cols-3 md:grid-cols-4 gap-3"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Reason for Visit</label>
+                            <textarea id="modalReason" rows="3" maxlength="500" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all resize-none focus:outline-none" placeholder="Please describe your symptoms or reason for appointment..."></textarea>
+                            <div class="text-right text-xs text-gray-500 mt-1"><span id="modalReasonCount">0</span> / 500</div>
+                        </div>
+                        <div class="flex gap-4">
+                            <button type="button" onclick="goToModalStep(1)" class="flex-1 py-4 bg-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-300 transition-all">← Back</button>
+                            <button type="button" onclick="goToModalStep(3)" class="flex-1 py-4 gradient-animated text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all">Review & Confirm →</button>
+                        </div>
+                    </div>
+
+                    <div id="modalSection3" class="hidden space-y-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><span>✅</span> Review Your Appointment</h3>
+                        <div class="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl p-6 space-y-4">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div><p class="text-sm text-gray-600">Full Name</p><p class="font-semibold text-gray-800" id="modalReviewName"></p></div>
+                                <div><p class="text-sm text-gray-600">Phone</p><p class="font-semibold text-gray-800" id="modalReviewPhone"></p></div>
+                                <div><p class="text-sm text-gray-600">Email</p><p class="font-semibold text-gray-800" id="modalReviewEmail"></p></div>
+                                <div><p class="text-sm text-gray-600">Date of Birth</p><p class="font-semibold text-gray-800" id="modalReviewDob"></p></div>
+                                <div><p class="text-sm text-gray-600">Appointment Type</p><p class="font-semibold text-gray-800" id="modalReviewType"></p></div>
+                                <div><p class="text-sm text-gray-600">Date & Time</p><p class="font-semibold text-gray-800" id="modalReviewDateTime"></p></div>
+                            </div>
+                            <div><p class="text-sm text-gray-600">Reason</p><p class="font-semibold text-gray-800" id="modalReviewReason"></p></div>
+                        </div>
+                        <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
+                            <p class="text-sm text-yellow-800"><strong>Note:</strong> You will receive a confirmation email and SMS with your appointment details. Please arrive 10 minutes early for your appointment.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <button type="button" onclick="goToModalStep(2)" class="flex-1 py-4 bg-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-300 transition-all">← Back</button>
+                            <button type="submit" id="modalSubmitBtn" class="flex-1 py-4 gradient-animated text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all">Confirm Appointment ✓</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chat Interface -->
     <div class="w-full max-w-3xl">
-        
         <div class="bg-white rounded-t-3xl shadow-2xl overflow-hidden">
-            
             <div class="gradient-animated text-white p-4 md:p-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
-                
                 <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
                     <div class="flex items-center gap-3 md:gap-4">
                         <div class="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-20 rounded-2xl md:rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-xl flex-shrink-0 tooth-container-float">
                             <span class="text-3xl md:text-4xl tooth-sparkle">🦷</span>
                         </div>
                         <div>
-                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight mb-0.5">
-                                <span class="typewriter-title" id="typewriterTitle">Virtual Dental Assistant</span>
-                            </h1>
-                            <p class="text-sm md:text-base opacity-90">
-                                <span class="typewriter" id="typewriterText">Developed by <strong>Plexura</strong></span>
-                            </p>
+                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight mb-0.5">Virtual Dental Assistant</h1>
+                            <p class="text-sm md:text-base opacity-90">Developed by <strong>Plexura</strong></p>
                         </div>
                     </div>
                     <div class="flex flex-row md:flex-col items-center md:items-end gap-2 self-end md:self-auto">
@@ -249,41 +282,23 @@
 
             <div class="bg-gradient-to-r from-cyan-600 to-teal-600 text-white px-4 md:px-6 py-3">
                 <div class="flex justify-around text-center text-xs md:text-sm">
-                    <div>
-                        <div class="text-lg md:text-xl font-bold" id="messageCounter">0</div>
-                        <div class="text-[10px] md:text-xs opacity-80">Messages</div>
-                    </div>
+                    <div><div class="text-lg md:text-xl font-bold" id="messageCounter">0</div><div class="text-[10px] md:text-xs opacity-80">Messages</div></div>
                     <div class="w-px bg-white opacity-30"></div>
-                    <div>
-                        <div class="text-lg md:text-xl font-bold">∞</div>
-                        <div class="text-[10px] md:text-xs opacity-80">Topics</div>
-                    </div>
+                    <div><div class="text-lg md:text-xl font-bold">∞</div><div class="text-[10px] md:text-xs opacity-80">Topics</div></div>
                     <div class="w-px bg-white opacity-30"></div>
-                    <div>
-                        <div class="text-lg md:text-xl font-bold">24/7</div>
-                        <div class="text-[10px] md:text-xs opacity-80">Available</div>
-                    </div>
+                    <div><div class="text-lg md:text-xl font-bold">24/7</div><div class="text-[10px] md:text-xs opacity-80">Available</div></div>
                     <div class="w-px bg-white opacity-30"></div>
-                    <div>
-                        <div class="text-lg md:text-xl font-bold" id="serverStatus">⚡</div>
-                        <div class="text-[10px] md:text-xs opacity-80">Connection</div>
-                    </div>
+                    <div><div class="text-lg md:text-xl font-bold" id="serverStatus">⚡</div><div class="text-[10px] md:text-xs opacity-80">Connection</div></div>
                 </div>
             </div>
 
             <div id="messagesContainer" class="chat-scroll p-4 md:p-6 bg-gradient-to-b from-cyan-50 to-white min-h-[400px] md:min-h-[450px]">
                 <div class="message-appear flex gap-3 mb-4">
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl gradient-animated flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg flex-shrink-0">
-                        🦷
-                    </div>
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl gradient-animated flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg flex-shrink-0">🦷</div>
                     <div class="flex-1 max-w-2xl">
                         <div class="bot-message rounded-2xl md:rounded-3xl rounded-tl-md p-4 md:p-5 shadow-lg">
-                            <p class="text-gray-800 text-base md:text-lg leading-relaxed mb-2">
-                                <strong>Hello! I'm your Dental AI Assistant Developed by Plexura.</strong>
-                            </p>
-                            <p class="text-gray-700 text-sm md:text-base leading-relaxed">
-                                Thank you for choosing Saia, an AI Assistant developed by Plexura & Powered by Google Gemini. Once connected, I can assist you with dental questions, appointments, and more.
-                            </p>
+                            <p class="text-gray-800 text-base md:text-lg leading-relaxed mb-2"><strong>Hello! I'm your Dental AI Assistant Developed by Plexura.</strong></p>
+                            <p class="text-gray-700 text-sm md:text-base leading-relaxed">Thank you for choosing Saia, an AI Assistant developed by Plexura & Powered by Google Gemini. Once connected, I can assist you with dental questions, appointments, and more.</p>
                         </div>
                     </div>
                 </div>
@@ -291,9 +306,7 @@
 
             <div id="typingIndicator" class="hidden px-4 md:px-6 pb-3 bg-gradient-to-b from-white to-cyan-50">
                 <div class="flex gap-3">
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl gradient-animated flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg">
-                        🦷
-                    </div>
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl gradient-animated flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg">🦷</div>
                     <div class="bot-message rounded-2xl md:rounded-3xl rounded-tl-md px-4 md:px-5 py-3 shadow-lg">
                         <div class="flex items-center gap-2">
                             <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full typing-dot"></div>
@@ -307,40 +320,21 @@
 
             <div class="px-4 md:px-6 py-3 bg-white border-t border-gray-100">
                 <div class="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
-                    <button onclick="sendQuick('I would like to book a dental appointment. Can you help me schedule one? I can provide my preferred date/time, reason for visit, and contact information.')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">
-                        📅 Book Appointment
-                    </button>
-                   <button onclick="sendQuick('I am experiencing dental symptoms and need help understanding what they might mean and if I need urgent care.')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">
-                        🩺 Symptoms Checker
-                    </button>
-                    <button onclick="sendQuick('I would like to learn more about a dental treatment or procedure. Can you explain what to expect?')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">
-                        ℹ️ Treatment Info
-                    </button>
-                    <button onclick="sendQuick('I would like to know which insurances are accepted.')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">
-                        💳 Insurance
-                    </button>
+                    <button onclick="openAppointmentModal()" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-cyan-100 to-blue-100 text-cyan-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">📅 Book Appointment</button>
+                    <button onclick="sendQuick('I am experiencing dental symptoms and need help understanding what they might mean and if I need urgent care.')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">🩺 Symptoms Checker</button>
+                    <button onclick="sendQuick('I would like to learn more about a dental treatment or procedure. Can you explain what to expect?')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">ℹ️ Treatment Info</button>
+                    <button onclick="sendQuick('I would like to know which insurances are accepted.')" class="quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold whitespace-nowrap shadow-sm">💳 Insurance</button>
                 </div>
             </div>
 
             <div class="p-4 md:p-6 bg-white border-t-2 border-gray-100">
                 <div class="flex gap-2 md:gap-3 items-end">
                     <div class="flex-1">
-                        <textarea 
-                            id="messageInput"
-                            rows="1"
-                            placeholder="Type your message here..."
-                            class="w-full px-4 md:px-5 py-3 bg-cyan-50 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-800 text-sm md:text-base resize-none transition-all duration-200"
-                            style="min-height: 48px; max-height: 120px;"
-                        ></textarea>
+                        <textarea id="messageInput" rows="1" placeholder="Type your message here..." class="w-full px-4 md:px-5 py-3 bg-cyan-50 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-800 text-sm md:text-base resize-none transition-all duration-200" style="min-height: 48px; max-height: 120px;"></textarea>
                     </div>
-                    <button 
-                        id="sendButton"
-                        class="btn-primary px-4 md:px-6 py-3 gradient-animated text-white rounded-xl md:rounded-2xl font-bold text-sm md:text-base shadow-xl flex items-center gap-2 h-12"
-                    >
+                    <button id="sendButton" class="btn-primary px-4 md:px-6 py-3 gradient-animated text-white rounded-xl md:rounded-2xl font-bold text-sm md:text-base shadow-xl flex items-center gap-2 h-12">
                         <span class="hidden sm:inline">Send</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                        </svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                     </button>
                 </div>
                 <div class="mt-2 flex items-center justify-between text-[10px] md:text-xs text-gray-500">
@@ -349,20 +343,19 @@
                     <span id="charCount">0 / 2000</span>
                 </div>
             </div>
-
         </div>
 
         <div class="mt-4 text-center text-sm text-gray-600 bg-white bg-opacity-50 backdrop-blur rounded-2xl p-4">
             <p>Saia, Developed by Plexura & Powered by Google Gemini</p>
         </div>
-
     </div>
 
     <script>
         const API_URL = '/api/chat';
-        
         let messageCount = 0;
         let isConnected = false;
+        let selectedModalTimeSlot = null;
+        let currentModalStep = 1;
 
         const messagesContainer = document.getElementById('messagesContainer');
         const messageInput = document.getElementById('messageInput');
@@ -374,16 +367,234 @@
         const statusDot = document.getElementById('statusDot');
         const serverStatus = document.getElementById('serverStatus');
 
+        function openAppointmentModal() {
+            document.getElementById('appointmentModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('modalAppointmentDate').min = tomorrow.toISOString().split('T')[0];
+            const maxDate = new Date();
+            maxDate.setDate(maxDate.getDate() + 90);
+            document.getElementById('modalAppointmentDate').max = maxDate.toISOString().split('T')[0];
+        }
+
+        function closeAppointmentModal() {
+            document.getElementById('appointmentModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('modalAppointmentForm').reset();
+            document.getElementById('modalSuccessMessage').classList.add('hidden');
+            document.getElementById('modalAppointmentForm').classList.remove('hidden');
+            goToModalStep(1);
+            selectedModalTimeSlot = null;
+        }
+
+        function goToModalStep(step) {
+            if (step === 2 && !validateModalStep1()) return;
+            if (step === 3 && !validateModalStep2()) return;
+            document.getElementById('modalSection1').classList.add('hidden');
+            document.getElementById('modalSection2').classList.add('hidden');
+            document.getElementById('modalSection3').classList.add('hidden');
+            document.getElementById(`modalSection${step}`).classList.remove('hidden');
+            for (let i = 1; i <= 3; i++) {
+                const stepEl = document.getElementById(`modalStep${i}`);
+                if (i <= step) {
+                    stepEl.classList.remove('bg-gray-200', 'text-gray-500');
+                    stepEl.classList.add('bg-cyan-500', 'text-white');
+                    stepEl.parentElement.querySelector('span').classList.remove('text-gray-500');
+                    stepEl.parentElement.querySelector('span').classList.add('text-gray-700');
+                } else {
+                    stepEl.classList.remove('bg-cyan-500', 'text-white');
+                    stepEl.classList.add('bg-gray-200', 'text-gray-500');
+                    stepEl.parentElement.querySelector('span').classList.remove('text-gray-700');
+                    stepEl.parentElement.querySelector('span').classList.add('text-gray-500');
+                }
+            }
+            if (step === 3) populateModalReview();
+            currentModalStep = step;
+        }
+
+        function validateModalStep1() {
+            const name = document.getElementById('modalFullName').value.trim();
+            const phone = document.getElementById('modalPhone').value.trim();
+            const email = document.getElementById('modalEmail').value.trim();
+            const dob = document.getElementById('modalDob').value;
+            if (!name || !phone || !email || !dob) {
+                alert('Please fill in all required fields.');
+                return false;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return false;
+            }
+            return true;
+        }
+
+        function validateModalStep2() {
+            const type = document.getElementById('modalAppointmentType').value;
+            const date = document.getElementById('modalAppointmentDate').value;
+            if (!type) {
+                alert('Please select an appointment type.');
+                return false;
+            }
+            if (!date) {
+                alert('Please select a date.');
+                return false;
+            }
+            if (!selectedModalTimeSlot) {
+                alert('Please select a time slot.');
+                return false;
+            }
+            return true;
+        }
+
+        async function loadModalAvailableSlots() {
+            const date = document.getElementById('modalAppointmentDate').value;
+            if (!date) return;
+            const selectedDate = new Date(date + 'T00:00:00');
+            const dayOfWeek = selectedDate.getDay();
+            if (dayOfWeek === 0) {
+                alert('We are closed on Sundays. Please select another date.');
+                document.getElementById('modalAppointmentDate').value = '';
+                return;
+            }
+            const timeSlots = generateModalTimeSlots(date);
+            try {
+                const response = await fetch(`/api/appointments/available-slots?date=${date}`);
+                const data = await response.json();
+                const bookedSlots = data.bookedSlots || [];
+                renderModalTimeSlots(timeSlots, bookedSlots);
+            } catch (error) {
+                console.error('Error loading slots:', error);
+                renderModalTimeSlots(timeSlots, []);
+            }
+        }
+
+        function generateModalTimeSlots(date) {
+            const selectedDate = new Date(date + 'T00:00:00');
+            const dayOfWeek = selectedDate.getDay();
+            const startHour = 9;
+            const endHour = dayOfWeek === 6 ? 14 : 17;
+            const slots = [];
+            for (let hour = startHour; hour < endHour; hour++) {
+                slots.push(`${hour.toString().padStart(2, '0')}:00`);
+                slots.push(`${hour.toString().padStart(2, '0')}:30`);
+            }
+            return slots;
+        }
+
+        function renderModalTimeSlots(slots, bookedSlots) {
+            const container = document.getElementById('modalTimeSlots');
+            container.innerHTML = '';
+            slots.forEach(slot => {
+                const isBooked = bookedSlots.includes(slot);
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = `time-slot px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold text-sm ${isBooked ? 'disabled' : ''}`;
+                button.textContent = formatTime(slot);
+                button.disabled = isBooked;
+                if (!isBooked) {
+                    button.onclick = () => selectModalTimeSlot(slot, button);
+                }
+                container.appendChild(button);
+            });
+        }
+
+        function selectModalTimeSlot(slot, element) {
+            document.querySelectorAll('#modalTimeSlots .time-slot').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedModalTimeSlot = slot;
+        }
+
+        function formatTime(time) {
+            const [hour, minute] = time.split(':');
+            const h = parseInt(hour);
+            const period = h >= 12 ? 'PM' : 'AM';
+            const displayHour = h > 12 ? h - 12 : h === 0 ? 12 : h;
+            return `${displayHour}:${minute} ${period}`;
+        }
+
+        function populateModalReview() {
+            document.getElementById('modalReviewName').textContent = document.getElementById('modalFullName').value;
+            document.getElementById('modalReviewPhone').textContent = document.getElementById('modalPhone').value;
+            document.getElementById('modalReviewEmail').textContent = document.getElementById('modalEmail').value;
+            document.getElementById('modalReviewDob').textContent = new Date(document.getElementById('modalDob').value).toLocaleDateString();
+            document.getElementById('modalReviewType').textContent = document.getElementById('modalAppointmentType').options[document.getElementById('modalAppointmentType').selectedIndex].text;
+            const date = new Date(document.getElementById('modalAppointmentDate').value + 'T00:00:00').toLocaleDateString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            document.getElementById('modalReviewDateTime').textContent = `${date} at ${formatTime(selectedModalTimeSlot)}`;
+            document.getElementById('modalReviewReason').textContent = document.getElementById('modalReason').value || 'No specific reason provided';
+        }
+
+        document.getElementById('modalReason').addEventListener('input', function() {
+            document.getElementById('modalReasonCount').textContent = this.value.length;
+        });
+
+        document.getElementById('modalAppointmentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('modalSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="animate-pulse">Submitting...</span>';
+            const formData = {
+                patientInfo: {
+                    name: document.getElementById('modalFullName').value.trim(),
+                    phone: document.getElementById('modalPhone').value.trim(),
+                    email: document.getElementById('modalEmail').value.trim(),
+                    dateOfBirth: document.getElementById('modalDob').value,
+                    isNewPatient: document.querySelector('input[name="modalPatientType"]:checked').value === 'new'
+                },
+                appointmentDetails: {
+                    type: document.getElementById('modalAppointmentType').value,
+                    preferredDate: document.getElementById('modalAppointmentDate').value,
+                    preferredTime: selectedModalTimeSlot,
+                    reason: document.getElementById('modalReason').value.trim(),
+                    urgency: document.getElementById('modalAppointmentType').value === 'emergency' ? 'emergency' : 'routine'
+                }
+            };
+            try {
+                const response = await fetch('/api/appointments/book', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('modalAppointmentForm').classList.add('hidden');
+                    document.getElementById('modalSuccessMessage').classList.remove('hidden');
+                    const date = new Date(formData.appointmentDetails.preferredDate + 'T00:00:00').toLocaleDateString('en-US', { 
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                    });
+                    document.getElementById('modalConfirmationDetails').innerHTML = `
+                        <p class="mb-1"><strong>Name:</strong> ${formData.patientInfo.name}</p>
+                        <p class="mb-1"><strong>Date:</strong> ${date}</p>
+                        <p class="mb-1"><strong>Time:</strong> ${formatTime(selectedModalTimeSlot)}</p>
+                        <p class="mb-1"><strong>Type:</strong> ${document.getElementById('modalAppointmentType').options[document.getElementById('modalAppointmentType').selectedIndex].text}</p>
+                        <p class="mb-1"><strong>Confirmation #:</strong> ${data.confirmationNumber || 'Will be sent via email'}</p>
+                    `;
+                    document.querySelector('.modal-scroll').scrollTop = 0;
+                } else {
+                    alert(data.error || 'Failed to book appointment. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Confirm Appointment ✓';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Confirm Appointment ✓';
+            }
+        });
+
         async function testConnection() {
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: 'test' })
                 });
-                
                 if (response.ok) {
                     isConnected = true;
                     statusText.textContent = 'Connected';
@@ -406,16 +617,10 @@
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: userMessage })
                 });
-
-                if (!response.ok) {
-                    throw new Error(`Server error: ${response.status}`);
-                }
-
+                if (!response.ok) throw new Error(`Server error: ${response.status}`);
                 const data = await response.json();
                 return data.response;
             } catch (error) {
@@ -425,64 +630,50 @@
         }
 
         function formatText(text) {
-            return text
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/\n/g, '<br>');
+            return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
         }
 
         function addMessage(text, isUser = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message-appear flex gap-3 mb-4 ${isUser ? 'flex-row-reverse' : ''}`;
-            
             const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
             messageDiv.innerHTML = `
                 <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl ${isUser ? 'bg-gradient-to-br from-cyan-600 to-blue-600' : 'gradient-animated'} flex items-center justify-center text-white text-2xl md:text-3xl shadow-lg flex-shrink-0">
                     ${isUser ? '👤' : '🦷'}
                 </div>
                 <div class="flex-1 max-w-2xl">
                     <div class="${isUser ? 'user-message text-white' : 'bot-message text-gray-800'} rounded-2xl md:rounded-3xl ${isUser ? 'rounded-tr-md' : 'rounded-tl-md'} p-4 md:p-5 shadow-lg">
-                        <p class="leading-relaxed text-sm md:text-base whitespace-pre-wrap" data-text="${text.replace(/"/g, '&quot;')}"></p>
+                        <p class="leading-relaxed text-sm md:text-base whitespace-pre-wrap"></p>
                     </div>
                     <div class="flex items-center gap-2 mt-1.5 ${isUser ? 'justify-end mr-2' : 'ml-2'}">
                         <span class="text-[10px] md:text-xs ${isUser ? 'text-cyan-600' : 'text-gray-500'}">${time}</span>
                     </div>
                 </div>
             `;
-            
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
             if (!isUser) {
                 messageCount++;
                 messageCounter.textContent = messageCount;
-                
-                // Typewriter effect for bot messages
                 const textElement = messageDiv.querySelector('p');
-                const fullText = text;
                 let index = 0;
-                textElement.innerHTML = '';
-                
                 const typewriterInterval = setInterval(() => {
-                    if (index < fullText.length) {
-                        const char = fullText[index];
+                    if (index < text.length) {
+                        const char = text[index];
                         if (char === '\n') {
                             textElement.innerHTML += '<br>';
-                        } else if (char === '*' && fullText[index + 1] === '*') {
-                            // Handle bold text
-                            const endIndex = fullText.indexOf('**', index + 2);
+                        } else if (char === '*' && text[index + 1] === '*') {
+                            const endIndex = text.indexOf('**', index + 2);
                             if (endIndex !== -1) {
-                                textElement.innerHTML += '<strong>' + fullText.substring(index + 2, endIndex) + '</strong>';
+                                textElement.innerHTML += '<strong>' + text.substring(index + 2, endIndex) + '</strong>';
                                 index = endIndex + 1;
                             } else {
                                 textElement.innerHTML += char;
                             }
                         } else if (char === '*') {
-                            // Handle italic text
-                            const endIndex = fullText.indexOf('*', index + 1);
+                            const endIndex = text.indexOf('*', index + 1);
                             if (endIndex !== -1) {
-                                textElement.innerHTML += '<em>' + fullText.substring(index + 1, endIndex) + '</em>';
+                                textElement.innerHTML += '<em>' + text.substring(index + 1, endIndex) + '</em>';
                                 index = endIndex;
                             } else {
                                 textElement.innerHTML += char;
@@ -495,12 +686,10 @@
                     } else {
                         clearInterval(typewriterInterval);
                     }
-                }, 30); // Speed of typing (lower = faster)
+                }, 30);
             } else {
-                // For user messages, display immediately
                 const textElement = messageDiv.querySelector('p');
-                const formattedText = formatText(text);
-                textElement.innerHTML = formattedText;
+                textElement.innerHTML = formatText(text);
             }
         }
 
@@ -515,22 +704,17 @@
 
         async function sendMessage() {
             const message = messageInput.value.trim();
-            
             if (!message || message.length > 2000) return;
-
             messageInput.disabled = true;
             sendButton.disabled = true;
-
             addMessage(message, true);
             messageInput.value = '';
             messageInput.style.height = 'auto';
             charCount.textContent = '0 / 2000';
-
             showTyping();
             const response = await callGeminiAPI(message);
             hideTyping();
             addMessage(response, false);
-
             messageInput.disabled = false;
             sendButton.disabled = false;
             messageInput.focus();
@@ -544,8 +728,7 @@
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-            const count = this.value.length;
-            charCount.textContent = `${count} / 2000`;
+            charCount.textContent = `${this.value.length} / 2000`;
         });
 
         sendButton.addEventListener('click', sendMessage);
@@ -558,8 +741,7 @@
         });
 
         function updateTime() {
-            const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('currentTime').textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
         updateTime();
         setInterval(updateTime, 1000);
@@ -569,7 +751,11 @@
             messageInput.focus();
         });
 
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('appointmentModal').classList.contains('hidden')) {
+                closeAppointmentModal();
+            }
+        });
     </script>
-
 </body>
 </html>

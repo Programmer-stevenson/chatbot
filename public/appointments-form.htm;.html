@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Saia Dental</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .gradient-animated {
+            background: linear-gradient(270deg, #0ea5e9, #06b6d4, #14b8a6, #10b981);
+            background-size: 800% 800%;
+            animation: gradientFlow 15s ease infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .time-slot {
+            transition: all 0.2s ease;
+        }
+
+        .time-slot:hover:not(.disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .time-slot.selected {
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+            color: white;
+            border-color: #0ea5e9;
+        }
+
+        .time-slot.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #0ea5e9;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-cyan-50 via-blue-50 to-teal-50 min-h-screen p-4">
+    
+    <div class="max-w-4xl mx-auto py-8">
+        
+        <!-- Header -->
+        <div class="text-center mb-8 fade-in">
+            <div class="inline-block p-4 bg-white rounded-full shadow-lg mb-4">
+                <span class="text-5xl">🦷</span>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Book Your Appointment</h1>
+            <p class="text-gray-600">Schedule your dental visit in just a few clicks</p>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden mb-6 p-6 bg-green-50 border-2 border-green-500 rounded-2xl fade-in">
+            <div class="flex items-start gap-4">
+                <div class="text-4xl">✅</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-green-800 mb-2">Appointment Request Submitted!</h3>
+                    <p class="text-green-700 mb-3">Thank you! We've received your appointment request.</p>
+                    <div id="confirmationDetails" class="bg-white p-4 rounded-lg text-sm text-gray-700"></div>
+                    <p class="text-green-600 text-sm mt-3">
+                        📧 A confirmation email will be sent to your email address.<br>
+                        📱 You'll receive an SMS reminder before your appointment.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Form -->
+        <form id="appointmentForm" class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 fade-in">
+            
+            <!-- Step Indicator -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-cyan-500 text-white flex items-center justify-center font-bold">1</div>
+                    <span class="text-sm font-semibold text-gray-700">Personal Info</span>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200 mx-4"></div>
+                <div class="flex items-center gap-2">
+                    <div id="step2" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold">2</div>
+                    <span class="text-sm font-semibold text-gray-500">Date & Time</span>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200 mx-4"></div>
+                <div class="flex items-center gap-2">
+                    <div id="step3" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold">3</div>
+                    <span class="text-sm font-semibold text-gray-500">Confirm</span>
+                </div>
+            </div>
+
+            <!-- Section 1: Personal Information -->
+            <div id="section1" class="space-y-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>👤</span> Personal Information
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Full Name <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="fullName" 
+                            name="fullName" 
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all"
+                            placeholder="John Doe"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Phone Number <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            name="phone" 
+                            required
+                            pattern="[0-9\s\-\+\(\)]+"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all"
+                            placeholder="(555) 123-4567"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Email Address <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all"
+                            placeholder="john@example.com"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Date of Birth <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="dob" 
+                            name="dob" 
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Are you a new patient?
+                    </label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="patientType" value="new" checked class="w-4 h-4 text-cyan-500">
+                            <span class="text-gray-700">New Patient</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="patientType" value="existing" class="w-4 h-4 text-cyan-500">
+                            <span class="text-gray-700">Existing Patient</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button 
+                    type="button" 
+                    onclick="goToStep(2)"
+                    class="w-full py-4 gradient-animated text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+                >
+                    Continue to Date & Time →
+                </button>
+            </div>
+
+            <!-- Section 2: Date & Time Selection -->
+            <div id="section2" class="hidden space-y-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>📅</span> Choose Date & Time
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Appointment Type <span class="text-red-500">*</span>
+                        </label>
+                        <select 
+                            id="appointmentType" 
+                            name="appointmentType" 
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all"
+                        >
+                            <option value="">Select type...</option>
+                            <option value="checkup">Regular Checkup (30 min)</option>
+                            <option value="cleaning">Teeth Cleaning (45 min)</option>
+                            <option value="consultation">Consultation (20 min)</option>
+                            <option value="treatment">Dental Treatment (60 min)</option>
+                            <option value="emergency">Emergency Visit (30 min)</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Preferred Date <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="appointmentDate" 
+                            name="appointmentDate" 
+                            required
+                            onchange="loadAvailableSlots()"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        Select Time Slot <span class="text-red-500">*</span>
+                    </label>
+                    <div id="timeSlots" class="grid grid-cols-3 md:grid-cols-4 gap-3">
+                        <!-- Time slots will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Reason for Visit
+                    </label>
+                    <textarea 
+                        id="reason" 
+                        name="reason" 
+                        rows="3"
+                        maxlength="500"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-cyan-500 transition-all resize-none"
+                        placeholder="Please describe your symptoms or reason for appointment..."
+                    ></textarea>
+                    <div class="text-right text-xs text-gray-500 mt-1">
+                        <span id="reasonCount">0</span> / 500
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button 
+                        type="button" 
+                        onclick="goToStep(1)"
+                        class="flex-1 py-4 bg-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-300 transition-all"
+                    >
+                        ← Back
+                    </button>
+                    <button 
+                        type="button" 
+                        onclick="goToStep(3)"
+                        class="flex-1 py-4 gradient-animated text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+                    >
+                        Review & Confirm →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 3: Review & Confirm -->
+            <div id="section3" class="hidden space-y-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>✅</span> Review Your Appointment
+                </h2>
+
+                <div class="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl p-6 space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Full Name</p>
+                            <p class="font-semibold text-gray-800" id="reviewName"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Phone</p>
+                            <p class="font-semibold text-gray-800" id="reviewPhone"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Email</p>
+                            <p class="font-semibold text-gray-800" id="reviewEmail"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Date of Birth</p>
+                            <p class="font-semibold text-gray-800" id="reviewDob"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Appointment Type</p>
+                            <p class="font-semibold text-gray-800" id="reviewType"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Date & Time</p>
+                            <p class="font-semibold text-gray-800" id="reviewDateTime"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Reason</p>
+                        <p class="font-semibold text-gray-800" id="reviewReason"></p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
+                    <p class="text-sm text-yellow-800">
+                        <strong>Note:</strong> You will receive a confirmation email and SMS with your appointment details. 
+                        Please arrive 10 minutes early for your appointment.
+                    </p>
+                </div>
+
+                <div class="flex gap-4">
+                    <button 
+                        type="button" 
+                        onclick="goToStep(2)"
+                        class="flex-1 py-4 bg-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-300 transition-all"
+                    >
+                        ← Back
+                    </button>
+                    <button 
+                        type="submit" 
+                        id="submitBtn"
+                        class="flex-1 py-4 gradient-animated text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+                    >
+                        Confirm Appointment ✓
+                    </button>
+                </div>
+            </div>
+
+        </form>
+
+        <!-- Back to Chat -->
+        <div class="text-center mt-6">
+            <a href="/" class="text-cyan-600 hover:text-cyan-700 font-semibold">
+                ← Back to Chat Assistant
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        let selectedTimeSlot = null;
+        let currentStep = 1;
+
+        // Set minimum date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('appointmentDate').min = tomorrow.toISOString().split('T')[0];
+
+        // Set maximum date to 90 days from now
+        const maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + 90);
+        document.getElementById('appointmentDate').max = maxDate.toISOString().split('T')[0];
+
+        // Character counter for reason
+        document.getElementById('reason').addEventListener('input', function() {
+            document.getElementById('reasonCount').textContent = this.value.length;
+        });
+
+        // Step navigation
+        function goToStep(step) {
+            if (step === 2 && !validateStep1()) return;
+            if (step === 3 && !validateStep2()) return;
+
+            // Hide all sections
+            document.getElementById('section1').classList.add('hidden');
+            document.getElementById('section2').classList.add('hidden');
+            document.getElementById('section3').classList.add('hidden');
+
+            // Show target section
+            document.getElementById(`section${step}`).classList.remove('hidden');
+
+            // Update step indicators
+            for (let i = 1; i <= 3; i++) {
+                const stepEl = document.getElementById(`step${i}`);
+                if (i <= step) {
+                    stepEl.classList.remove('bg-gray-200', 'text-gray-500');
+                    stepEl.classList.add('bg-cyan-500', 'text-white');
+                    stepEl.parentElement.querySelector('span').classList.remove('text-gray-500');
+                    stepEl.parentElement.querySelector('span').classList.add('text-gray-700');
+                } else {
+                    stepEl.classList.remove('bg-cyan-500', 'text-white');
+                    stepEl.classList.add('bg-gray-200', 'text-gray-500');
+                    stepEl.parentElement.querySelector('span').classList.remove('text-gray-700');
+                    stepEl.parentElement.querySelector('span').classList.add('text-gray-500');
+                }
+            }
+
+            if (step === 3) {
+                populateReview();
+            }
+
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateStep1() {
+            const name = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const dob = document.getElementById('dob').value;
+
+            if (!name || !phone || !email || !dob) {
+                alert('Please fill in all required fields.');
+                return false;
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function validateStep2() {
+            const type = document.getElementById('appointmentType').value;
+            const date = document.getElementById('appointmentDate').value;
+
+            if (!type) {
+                alert('Please select an appointment type.');
+                return false;
+            }
+
+            if (!date) {
+                alert('Please select a date.');
+                return false;
+            }
+
+            if (!selectedTimeSlot) {
+                alert('Please select a time slot.');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Load available time slots based on selected date
+        async function loadAvailableSlots() {
+            const date = document.getElementById('appointmentDate').value;
+            if (!date) return;
+
+            const selectedDate = new Date(date + 'T00:00:00');
+            const dayOfWeek = selectedDate.getDay();
+
+            // Skip Sundays (0)
+            if (dayOfWeek === 0) {
+                alert('We are closed on Sundays. Please select another date.');
+                document.getElementById('appointmentDate').value = '';
+                return;
+            }
+
+            // Define time slots
+            const timeSlots = generateTimeSlots(date);
+            
+            // Fetch booked slots from server
+            try {
+                const response = await fetch(`/api/appointments/available-slots?date=${date}`);
+                const data = await response.json();
+                const bookedSlots = data.bookedSlots || [];
+
+                renderTimeSlots(timeSlots, bookedSlots);
+            } catch (error) {
+                console.error('Error loading slots:', error);
+                renderTimeSlots(timeSlots, []);
+            }
+        }
+
+        function generateTimeSlots(date) {
+            const selectedDate = new Date(date + 'T00:00:00');
+            const dayOfWeek = selectedDate.getDay();
+
+            // Saturday hours: 9 AM - 2 PM
+            // Weekday hours: 9 AM - 5 PM
+            const startHour = 9;
+            const endHour = dayOfWeek === 6 ? 14 : 17;
+            
+            const slots = [];
+            for (let hour = startHour; hour < endHour; hour++) {
+                slots.push(`${hour.toString().padStart(2, '0')}:00`);
+                slots.push(`${hour.toString().padStart(2, '0')}:30`);
+            }
+
+            return slots;
+        }
+
+        function renderTimeSlots(slots, bookedSlots) {
+            const container = document.getElementById('timeSlots');
+            container.innerHTML = '';
+
+            slots.forEach(slot => {
+                const isBooked = bookedSlots.includes(slot);
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = `time-slot px-4 py-3 border-2 border-gray-200 rounded-xl font-semibold text-sm ${isBooked ? 'disabled' : ''}`;
+                button.textContent = formatTime(slot);
+                button.disabled = isBooked;
+
+                if (!isBooked) {
+                    button.onclick = () => selectTimeSlot(slot, button);
+                }
+
+                container.appendChild(button);
+            });
+        }
+
+        function selectTimeSlot(slot, element) {
+            // Remove selection from all slots
+            document.querySelectorAll('.time-slot').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // Select this slot
+            element.classList.add('selected');
+            selectedTimeSlot = slot;
+        }
+
+        function formatTime(time) {
+            const [hour, minute] = time.split(':');
+            const h = parseInt(hour);
+            const period = h >= 12 ? 'PM' : 'AM';
+            const displayHour = h > 12 ? h - 12 : h === 0 ? 12 : h;
+            return `${displayHour}:${minute} ${period}`;
+        }
+
+        function populateReview() {
+            document.getElementById('reviewName').textContent = document.getElementById('fullName').value;
+            document.getElementById('reviewPhone').textContent = document.getElementById('phone').value;
+            document.getElementById('reviewEmail').textContent = document.getElementById('email').value;
+            document.getElementById('reviewDob').textContent = new Date(document.getElementById('dob').value).toLocaleDateString();
+            document.getElementById('reviewType').textContent = document.getElementById('appointmentType').options[document.getElementById('appointmentType').selectedIndex].text;
+            
+            const date = new Date(document.getElementById('appointmentDate').value + 'T00:00:00').toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('reviewDateTime').textContent = `${date} at ${formatTime(selectedTimeSlot)}`;
+            document.getElementById('reviewReason').textContent = document.getElementById('reason').value || 'No specific reason provided';
+        }
+
+        // Form submission
+        document.getElementById('appointmentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="animate-pulse">Submitting...</span>';
+
+            const formData = {
+                patientInfo: {
+                    name: document.getElementById('fullName').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    dateOfBirth: document.getElementById('dob').value,
+                    isNewPatient: document.querySelector('input[name="patientType"]:checked').value === 'new'
+                },
+                appointmentDetails: {
+                    type: document.getElementById('appointmentType').value,
+                    preferredDate: document.getElementById('appointmentDate').value,
+                    preferredTime: selectedTimeSlot,
+                    reason: document.getElementById('reason').value.trim(),
+                    urgency: document.getElementById('appointmentType').value === 'emergency' ? 'emergency' : 'routine'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/appointments/book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    document.getElementById('appointmentForm').classList.add('hidden');
+                    document.getElementById('successMessage').classList.remove('hidden');
+                    
+                    // Populate confirmation details
+                    const date = new Date(formData.appointmentDetails.preferredDate + 'T00:00:00').toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    
+                    document.getElementById('confirmationDetails').innerHTML = `
+                        <p class="mb-1"><strong>Name:</strong> ${formData.patientInfo.name}</p>
+                        <p class="mb-1"><strong>Date:</strong> ${date}</p>
+                        <p class="mb-1"><strong>Time:</strong> ${formatTime(selectedTimeSlot)}</p>
+                        <p class="mb-1"><strong>Type:</strong> ${document.getElementById('appointmentType').options[document.getElementById('appointmentType').selectedIndex].text}</p>
+                        <p class="mb-1"><strong>Confirmation #:</strong> ${data.confirmationNumber || 'Will be sent via email'}</p>
+                    `;
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    alert(data.error || 'Failed to book appointment. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Confirm Appointment ✓';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Confirm Appointment ✓';
+            }
+        });
+    </script>
+
+</body>
+</html>
